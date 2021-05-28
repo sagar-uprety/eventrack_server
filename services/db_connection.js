@@ -13,6 +13,7 @@ const connectDB = async () => {
       useCreateIndex: true,
     });
     console.log("Database Connected Successfuly");
+    // console.log(dbURL);
   } catch (err) {
     console.log(`Error occured when connecting to database ${err}`);
     process.exit(1); //exit with failure

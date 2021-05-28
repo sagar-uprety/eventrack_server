@@ -23,11 +23,13 @@ app.use(urlencoded({ extended: true })); //parse req data coming from URL
 connectDatabase();
 
 //home route
-app.use("/", homeRoutes);
+// app.use("/", homeRoutes);
+
 //auth routes
 app.use("/auth", authRoutes);
+
 //event Routes
-app.use("/news", eventRoutes);
+app.use("/events", eventRoutes);
 
 //favicon for browser
 app.get("/favicon.ico", (req, res) => res.status(204));
