@@ -3,11 +3,11 @@ import Event from "../models/events.js";
 //Get all Events
 const viewAllEvent = async (req, res) => {
   try {
-    const event = await Event.find({}).sort({ createdAt: -1 });
+    const event = await Event.find({}).sort({ createdAt: -1 }); //latest events will appear first.
     if (event.length === 0) {
       res.json({ message: "No Events found" });
     } else {
-      res.json(event);
+      res.json({ event_list: event });
     }
   } catch (err) {
     res.json({ message: err });
@@ -21,7 +21,7 @@ const createEvent = async (req, res) => {
     title: req.body.title,
     description: req.body.desc,
   });
-  // console.log(req.user); //gives current user data. if used checkUser middleware in this route.
+  console.log(req.user); //gives current user data. if used checkUser middleware in this route.
   try {
     const savedNews = await event.save();
     res.json(savedNews);
