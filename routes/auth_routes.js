@@ -16,7 +16,7 @@ router.post(
   auth_controller.createUser
 );
 
-router.get(
+router.post(
   "/login",
   validation(loginSchemaValid, "body"),
   auth_controller.loginUser
