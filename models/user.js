@@ -1,25 +1,44 @@
 import mongoose from "mongoose";
 
 //Mongoose Schema : Provides app level validation i.e when saving to the database
-//TODO: Add actual model
 const userSchema = new mongoose.Schema({
-  username: {
-    type: String,
-    min: 5,
-    max: 255,
-  },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-    min: 5,
-    max: 255,
-  },
-  password: {
-    type: String,
-    required: true,
-    min: 6,
-  },
+	name: {
+		type: String,
+		min: 5,
+		max: 255,
+		required: true,
+	},
+	email: {
+		type: String,
+		required: true,
+		unique: true,
+		min: 5,
+		max: 255,
+	},
+	password: {
+		type: String,
+		required: true,
+		min: 6,
+	},
+	phone: {
+		type: Number,
+	},
+	profileUrl: {
+		type: String,
+		default:
+			"https://res.cloudinary.com/eventtrack39823/image/upload/v1615991990/defaultAvatar.jpg",
+	},
+	hasVerifiedEmail: {
+		type: Boolean,
+		default: false,
+	},
+	tokenInfo: {
+		token: { type: String, min: 4, max: 8 },
+		tokenExpiration: { type: Date, default: Date.now() + 3600000 },
+	},
+	registeredEvents: {
+		type: [mongoose.Schema.Types.ObjectId],
+	},
 });
 
 const User = mongoose.model("user", userSchema); //users (Plural) collection is created in db

@@ -32,14 +32,14 @@ app.use("/auth", authRoutes);
 app.use("/events", eventRoutes);
 
 //favicon for browser
-app.get("/favicon.ico", (req, res) => res.status(204));
+app.get("/favicon.ico", (_, res) => res.status(204));
 
 //404 error handler page
-app.use((req, res) => {
-  res.status(500).send("404: Page Not Found");
+app.use((_, res) => {
+	res.status(500).send("404: Page Not Found");
 });
 
 //Server Listens On:
 app.listen(port, () => {
-  console.log(`Server Listening on ${port}`);
+	console.log(`Server Listening on ${port}`);
 });
