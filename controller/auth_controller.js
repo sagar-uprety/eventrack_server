@@ -1,5 +1,6 @@
 import User from "../models/user.js";
 import Image from "../functions/image.js";
+import email from "../functions/email.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
@@ -93,8 +94,28 @@ const uploadProfile = async (req, res) => {
 	}
 };
 
+const sendVerificationToken = async (req, res) => {
+	try {
+		var token = await email(req.body.email, "verificationToken");
+		res.json({ token: token });
+	} catch (err) {
+		console.log(err);
+		res.json(err);
+	}
+};
+
+const sendPasswordResetToken = async (req, res) => {
+	try {
+		var token = await email(req.body.email, "resetToken");
+		res.json({ token: token });
+	} catch (err) {
+		console.log(err);
+		res.json(err);
+	}
+};
+
 // Do this from Flutter
-const logoutUser = (req, res) => {
+const logoutUser = (_, res) => {
 	res
 		.header("auth-token", "")
 		.json({ message: "User Logged In", "auth-token": authToken });
@@ -115,4 +136,6 @@ export default {
 	loginUser,
 	logoutUser,
 	uploadProfile,
+	sendVerificationToken,
+	sendPasswordResetToken,
 };

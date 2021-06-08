@@ -32,6 +32,10 @@ router.post(
 	auth_controller.uploadProfile
 );
 
+router.post("/verificationToken", auth_controller.sendVerificationToken);
+
+router.post("/resetToken", auth_controller.sendPasswordResetToken);
+
 router.get("/logout", auth_controller.logoutUser);
 
 export default router;
