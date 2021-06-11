@@ -33,11 +33,21 @@ const userSchema = new mongoose.Schema({
 		default: false,
 	},
 	tokenInfo: {
-		token: { type: String, min: 4, max: 8 },
+		token: { type: String, min: 6, max: 8 },
 		tokenExpiration: { type: Date },
 	},
 	registeredEvents: {
 		type: [mongoose.Schema.Types.ObjectId],
+	},
+	// userRole: {
+	// 	user: { type: Boolean, default: true },
+	// 	eventOrganizer: { type: Boolean, default: false },
+	// 	admin: { type: Boolean, default: false },
+	// },
+	blockStatus: {
+		isBlocked: { type: Boolean, default: false },
+		from: Date,
+		to: Date,
 	},
 });
 

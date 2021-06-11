@@ -14,6 +14,10 @@ const isAuthenticated = (headers) => {
 	}
 };
 
+/**
+ * Checks if 'auth-token' is valid.
+ */
+
 const authTokenCheck = (req, res, next) => {
 	if (isAuthenticated(req.headers)) {
 		next();
@@ -22,15 +26,40 @@ const authTokenCheck = (req, res, next) => {
 	}
 };
 
+/**
+ * Checks if `auth-token` is valid and finds the value of the user found with `auth-token`.
+ */
+
 const checkUser = async (req, res, next) => {
 	const token = isAuthenticated(req.headers);
 
 	if (token) {
 		let user = await User.findById(token._id);
+		// user.blockStatus = checkBlockState(user.blockStatus);
+		// await user.save();
 		req.user = user; //returns acutal User Model - Mongo
 		next();
 	} else {
 		res.status(400).json({ message: "Invalid Token" });
 	}
 };
+
+/**
+ *
+ * @param {Object} status -`blockStatus` property of the current `user`
+ * @returns updated `blockStatus` if 30 days has completed, else returns the receied `blockStatus`
+ */
+
+const checkBlockState = (status) => {
+	if (!status) return res.json({ message: "Invalid Block Status" });
+	if (status.isBlocked) {
+		if (Date.now() >= status.to) {
+			status = {
+				isBlocked: false,
+			};
+		}
+	}
+	return status;
+};
+
 export { authTokenCheck, checkUser };

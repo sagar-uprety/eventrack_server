@@ -36,7 +36,7 @@ var eventSchema = new mongoose.Schema(
 		verificationState: {
 			isVerified: { type: Boolean, default: false },
 			verifiedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-			// timestamps: true,
+			date: Date,
 		},
 		author: {
 			type: mongoose.Schema.Types.ObjectId,

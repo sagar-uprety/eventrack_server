@@ -51,7 +51,7 @@ const loginUser = async (req, res) => {
 		const { email, password } = req.body;
 
 		const user = await User.findOne({
-			email: req.body.email,
+			email: email,
 		});
 
 		if (user == null) {
@@ -60,10 +60,7 @@ const loginUser = async (req, res) => {
 		//if user in registered
 		else {
 			//check password
-			const passwordCheck = await bcrypt.compare(
-				req.body.password,
-				user.password
-			);
+			const passwordCheck = await bcrypt.compare(password, user.password);
 			//if the password is correct. Then create a token and send to user
 			if (passwordCheck) {
 				const authToken = createToken(user._id);

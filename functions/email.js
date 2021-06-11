@@ -1,6 +1,17 @@
 import nodemailer from "nodemailer";
 import cryptoRandomString from "crypto-random-string";
 
+const generateToken = () => {
+	var token = cryptoRandomString({ length: 6, type: "numeric" });
+	return token;
+};
+
+/**
+ *
+ * @param {String} to -Example: abcd123@gmail.com
+ * @param {Object} param1 -`subject` & `body` to send in mail.
+ * `body` must be a HTML.
+ */
 const sendEmail = async (to, { subject, message }) => {
 	try {
 		var smtpTransport = nodemailer.createTransport({
@@ -20,14 +31,15 @@ const sendEmail = async (to, { subject, message }) => {
 
 		await smtpTransport.sendMail(mailOptions);
 	} catch (error) {
-		throw error;
+		console.error(error);
 	}
 };
 
-const generateToken = () => {
-	var token = cryptoRandomString({ length: 6, type: "numeric" });
-	return token;
-};
+/**
+ * @param {String} to - example: abcd123@gmail.com
+ * @param {String} type - example: verificationToken || resetToken
+ * @returns {String} - generated token
+ */
 
 const sendToken = async (to, type) => {
 	var token = generateToken();
@@ -54,7 +66,7 @@ const sendToken = async (to, type) => {
 		await sendEmail(to, mailBody);
 		return token;
 	} catch (err) {
-		console.log(err);
+		console.error(err);
 	}
 };
 
