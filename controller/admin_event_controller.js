@@ -1,6 +1,6 @@
 import Event from "../models/events.js";
 
-const actions = {}
+const actions = {};
 
 actions.fetchAllEvents = async (_, res) => {
 	try {

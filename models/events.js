@@ -29,10 +29,6 @@ var eventSchema = new mongoose.Schema(
 			subAdministrativeArea: String,
 			country: String,
 		},
-		eventFee: {
-			type: Number,
-			default: 0.0,
-		},
 		verificationState: {
 			isVerified: { type: Boolean, default: false },
 			verifiedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
@@ -40,7 +36,7 @@ var eventSchema = new mongoose.Schema(
 		},
 		author: {
 			type: mongoose.Schema.Types.ObjectId,
-			ref: "User",
+			ref: "Organization",
 			// required: true,
 		},
 		images: [

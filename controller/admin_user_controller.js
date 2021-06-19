@@ -1,22 +1,8 @@
 import User from "../models/user.js";
 
-const verifyUser = async (req, res) => {
-	try {
-		var user = await User.findById(req.body.id, {
-			name: 1,
-			hasVerifiedEmail: 1,
-		});
-		if (user == null) return res.json("User Not Found");
-		user.hasVerifiedEmail = true;
-		await user.save();
+const actions = {};
 
-		return res.json({ message: `Succefully Verified ${user.name}.` });
-	} catch (error) {
-		return res.json({ message: error });
-	}
-};
-
-const changeUserBlockState = async (req, res) => {
+actions.changeUserBlockState = async (req, res) => {
 	try {
 		var user = await User.findById(req.body.id, { name: 1, blockStatus: 1 });
 
@@ -38,7 +24,4 @@ const changeUserBlockState = async (req, res) => {
 	}
 };
 
-export default {
-	verifyUser,
-	changeUserBlockState,
-};
+export default actions;
