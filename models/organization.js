@@ -34,33 +34,6 @@ const organizationSchema = new mongoose.Schema({
 	// ],
 });
 
-/**
- *
- * @returns callback(<Boolean>)
- */
-
-// organizationSchema.pre("save", async function (next) {
-// 	var organization = this;
-// if (!organization.blockStatus.isBlocked) return next();
-
-// if (
-// 	organization.blockStatus.isBlocked &&
-// 	Date.now() >= organization.blockStatus.to
-// ) {
-// 	organization.blockStatus = {
-// 		isBlocked: false,
-// 	};
-// 	// await organization.save();
-// 	return next();
-// }
-
-// return next(
-// 	new Error(
-// 		`Your Organization has been blocked until ${organization.blockStatus.too}`
-// 	)
-// );
-// });
-
 const Organization = mongoose.model("organization", organizationSchema);
 
 export default Organization;
