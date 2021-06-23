@@ -16,7 +16,7 @@ var eventSchema = new mongoose.Schema(
 		dateTime: {
 			date: Array,
 			time: Array,
-			required: true,
+			// required: true,
 		},
 		location: {
 			latitude: Number,
@@ -29,18 +29,14 @@ var eventSchema = new mongoose.Schema(
 			subAdministrativeArea: String,
 			country: String,
 		},
-		eventFee: {
-			type: Number,
-			default: 0.0,
-		},
 		verificationState: {
 			isVerified: { type: Boolean, default: false },
 			verifiedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-			timestamps: true,
+			date: Date,
 		},
 		author: {
 			type: mongoose.Schema.Types.ObjectId,
-			ref: "User",
+			ref: "Organization",
 			// required: true,
 		},
 		images: [

@@ -13,8 +13,8 @@ const router = Router();
 //see above two middlewares in middlewares/auth_middleware.js
 
 router.get("/", authTokenCheck, event_controller.viewAllEvent);
-router.post("/", authTokenCheck, checkUser, event_controller.createEvent);
-router.get("/:id", authTokenCheck, event_controller.viewEventDetail);
+router.post("/", checkUser, event_controller.createEvent);
+router.get("/:id", checkUser, event_controller.viewEventDetail);
 router.delete("/:id", authTokenCheck, event_controller.deleteEvent);
 
 export default router;

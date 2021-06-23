@@ -1,34 +1,65 @@
 import jwt from "jsonwebtoken";
 import User from "../models/user.js";
 
-const authTokenCheck = (req, res, next) => {
-  const authToken = req.header("auth-token");
-  if (!authToken) return res.status(401).json({ message: "Access Denied" });
+const isAuthenticated = (headers) => {
+	const authToken = headers["auth-token"];
+	if (!authToken) return false;
 
-  try {
-    const verifyToken = jwt.verify(authToken, process.env.AUTH_TOKEN_SECRET);
-    // req.user = verifyToken; //returns jwt payload.
-    next();
-  } catch (err) {
-    console.log(`Error ${err}`);
-    res.status(400).json({ message: "Invalid Token" });
-  }
+	try {
+		const verifyToken = jwt.verify(authToken, process.env.AUTH_TOKEN_SECRET);
+		return verifyToken;
+	} catch (err) {
+		console.log(`Error ${err}`);
+		return null;
+	}
 };
+
+/**
+ * Checks if 'auth-token' is valid.
+ */
+
+const authTokenCheck = (req, res, next) => {
+	if (isAuthenticated(req.headers)) {
+		next();
+	} else {
+		res.status(400).json({ message: "Invalid Token" });
+	}
+};
+
+/**
+ * Checks if `auth-token` is valid and finds the value of the user found with `auth-token`.
+ */
 
 const checkUser = async (req, res, next) => {
-  const authToken = req.header("auth-token");
-  if (!authToken) return res.status(401).json({ message: "No Acess Token" });
+	const token = isAuthenticated(req.headers);
 
-  try {
-    const verifyToken = jwt.verify(authToken, process.env.AUTH_TOKEN_SECRET);
-    let user = await User.findById(verifyToken._id);
-    req.user = user; //returns acutal User Model - Mongo
-    next();
-  } catch (err) {
-    req.user = null;
-    console.log(`Error ${err}`);
-    res.status(400).json({ message: "Invalid Token" });
-    next();
-  }
+	if (token) {
+		let user = await User.findById(token._id);
+		// user.blockStatus = checkBlockState(user.blockStatus);
+		// await user.save();
+		req.user = user; //returns acutal User Model - Mongo
+		next();
+	} else {
+		res.status(400).json({ message: "Invalid Token" });
+	}
 };
+
+/**
+ *
+ * @param {Object} status -`blockStatus` property of the current `user`
+ * @returns updated `blockStatus` if 30 days has completed, else returns the receied `blockStatus`
+ */
+
+const checkBlockState = (status) => {
+	if (!status) return res.json({ message: "Invalid Block Status" });
+	if (status.isBlocked) {
+		if (Date.now() >= status.to) {
+			status = {
+				isBlocked: false,
+			};
+		}
+	}
+	return status;
+};
+
 export { authTokenCheck, checkUser };

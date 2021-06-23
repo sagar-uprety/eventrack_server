@@ -4,9 +4,12 @@ import cors from "cors";
 import dotenv from "dotenv";
 
 import connectDatabase from "./services/db_connection.js";
+import connectCloudinary from "./services/cloudinary_connection.js";
 
 import authRoutes from "./routes/auth_routes.js";
+import organizationRoutes from "./routes/organization_routes.js";
 import eventRoutes from "./routes/event_routes.js";
+import adminRoutes from "./routes/admin_routes.js";
 
 dotenv.config();
 
@@ -19,8 +22,9 @@ app.use(cors());
 app.use(json()); //parse raw json in req body..using instead of body parser
 app.use(urlencoded({ extended: true })); //parse req data coming from URL
 
-//connection to db - asynchronous method using then (NR)
+//connection to db and cloudinary - asynchronous method using then (NR)
 connectDatabase();
+connectCloudinary();
 
 //home route
 // app.use("/", homeRoutes);
@@ -28,8 +32,14 @@ connectDatabase();
 //auth routes
 app.use("/auth", authRoutes);
 
+//organization Routes
+app.use("/org", organizationRoutes);
+
 //event Routes
 app.use("/events", eventRoutes);
+
+//admin Routes
+app.use("/admin", adminRoutes);
 
 //favicon for browser
 app.get("/favicon.ico", (_, res) => res.status(204));
