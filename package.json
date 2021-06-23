@@ -1,14 +1,13 @@
 {
   "name": "eventrack_server",
   "version": "1.0.0",
-  "description": "",
   "type": "module",
   "main": "index.js",
   "scripts": {
     "start": "node app.js",
     "dev": "nodemon app.js"
   },
-  "author": "",
+  "author": "Shreya",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.0.1",
@@ -22,5 +21,14 @@
   },
   "devDependencies": {
     "nodemon": "^2.0.7"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shreya2057/eventrack_server.git"
+  },
+  "bugs": {
+    "url": "https://github.com/shreya2057/eventrack_server/issues"
+  },
+  "homepage": "https://github.com/shreya2057/eventrack_server#readme",
+  "description": ""
 }
