@@ -7,7 +7,9 @@ import connectDatabase from "./services/db_connection.js";
 import connectCloudinary from "./services/cloudinary_connection.js";
 
 import authRoutes from "./routes/auth_routes.js";
+import organizationRoutes from "./routes/organization_routes.js";
 import eventRoutes from "./routes/event_routes.js";
+import adminRoutes from "./routes/admin_routes.js";
 
 dotenv.config();
 
@@ -30,8 +32,14 @@ connectCloudinary();
 //auth routes
 app.use("/auth", authRoutes);
 
+//organization Routes
+app.use("/org", organizationRoutes);
+
 //event Routes
 app.use("/events", eventRoutes);
+
+//admin Routes
+app.use("/admin", adminRoutes);
 
 //favicon for browser
 app.get("/favicon.ico", (_, res) => res.status(204));

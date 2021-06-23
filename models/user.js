@@ -33,13 +33,41 @@ const userSchema = new mongoose.Schema({
 		default: false,
 	},
 	tokenInfo: {
-		token: { type: String, min: 4, max: 8 },
+		token: { type: String, min: 6, max: 8 },
 		tokenExpiration: { type: Date },
 	},
 	registeredEvents: {
 		type: [mongoose.Schema.Types.ObjectId],
 	},
+	userRole: {
+		user: { type: Boolean, default: true },
+		admin: { type: Boolean, default: false },
+	},
+	organization: {
+		type: mongoose.Schema.Types.ObjectId,
+		ref: "Organization",
+	},
+	blockStatus: {
+		isBlocked: { type: Boolean, default: false },
+		from: Date,
+		to: Date,
+	},
 });
+
+/**
+ *
+ * @returns callback(<Boolean>)
+ */
+userSchema.methods.checkBlockState = async function (cb) {
+	var user = this;
+	if (user.blockStatus.isBlocked && Date.now() >= user.blockStatus.to) {
+		user.blockStatus = {
+			isBlocked: false,
+		};
+		await user.save();
+	}
+	return cb(user.blockStatus.isBlocked);
+};
 
 const User = mongoose.model("user", userSchema); //users (Plural) collection is created in db
 

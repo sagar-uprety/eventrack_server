@@ -51,7 +51,7 @@ const loginUser = async (req, res) => {
 		const { email, password } = req.body;
 
 		const user = await User.findOne({
-			email: req.body.email,
+			email: email,
 		});
 
 		if (user == null) {
@@ -60,16 +60,20 @@ const loginUser = async (req, res) => {
 		//if user in registered
 		else {
 			//check password
-			const passwordCheck = await bcrypt.compare(
-				req.body.password,
-				user.password
-			);
+			const passwordCheck = await bcrypt.compare(password, user.password);
 			//if the password is correct. Then create a token and send to user
 			if (passwordCheck) {
-				const authToken = createToken(user._id);
-				res
-					.header("auth-token", authToken)
-					.json({ message: "User Logged In", "auth-token": authToken });
+				await user.checkBlockState(function (isBlocked) {
+					if (!isBlocked) {
+						const authToken = createToken(user._id);
+						return res
+							.header("auth-token", authToken)
+							.json({ message: "User Logged In", "auth-token": authToken });
+					}
+					return res.json({
+						message: `Your account has been blocked until ${user.blockStatus.to}`,
+					});
+				});
 			}
 			//if it's incorrect password
 			else {
@@ -96,7 +100,7 @@ const uploadProfile = async (req, res) => {
 
 const sendVerificationToken = async (req, res) => {
 	try {
-		var token = await email(req.body.email, "verificationToken");
+		var token = email(req.body.email, "verificationToken");
 		res.json({ token: token });
 	} catch (err) {
 		console.log(err);
@@ -106,7 +110,7 @@ const sendVerificationToken = async (req, res) => {
 
 const sendPasswordResetToken = async (req, res) => {
 	try {
-		var token = await email(req.body.email, "resetToken");
+		var token = email(req.body.email, "resetToken");
 		res.json({ token: token });
 	} catch (err) {
 		console.log(err);
