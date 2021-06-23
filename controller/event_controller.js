@@ -48,6 +48,26 @@ const viewEventDetail = async (req, res) => {
 	}
 };
 
+//Search Events
+const searchEvents = async (req, res) => {
+	try{
+		const { title }  = req.params;
+		console.log(req.params);
+		console.log('hi');
+		const events = await Event.find({ title: new RegExp(title) });
+		console.log(events)
+		if (!events) {
+			console.log("Cannot Find Event");
+			res.json({ message: "Cannot Find Event" });
+		} else {
+			res.json(events);
+		}
+	} catch (err) {
+		console.log(err);
+		res.json({ message: err });
+	}
+};
+
 const deleteEvent = async (req, res) => {
 	try {
 		const deletedNews = await Event.findByIdAndDelete(req.params.id); //return deleted event
@@ -69,5 +89,6 @@ export default {
 	viewAllEvent,
 	createEvent,
 	viewEventDetail,
+	searchEvents,
 	deleteEvent,
 };

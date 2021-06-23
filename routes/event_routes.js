@@ -15,6 +15,7 @@ const router = Router();
 router.get("/", authTokenCheck, event_controller.viewAllEvent);
 router.post("/", checkUser, event_controller.createEvent);
 router.get("/:id", checkUser, event_controller.viewEventDetail);
+router.get("/searchEvents/:title", checkUser, event_controller.searchEvents);
 router.delete("/:id", authTokenCheck, event_controller.deleteEvent);
 
 export default router;
