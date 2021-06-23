@@ -34,7 +34,7 @@ const userSchema = new mongoose.Schema({
 	},
 	tokenInfo: {
 		token: { type: String, min: 4, max: 8 },
-		tokenExpiration: { type: Date, default: Date.now() + 3600000 },
+		tokenExpiration: { type: Date },
 	},
 	registeredEvents: {
 		type: [mongoose.Schema.Types.ObjectId],

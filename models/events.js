@@ -16,7 +16,7 @@ var eventSchema = new mongoose.Schema(
 		dateTime: {
 			date: Array,
 			time: Array,
-			required: true,
+			// required: true,
 		},
 		location: {
 			latitude: Number,
@@ -36,7 +36,7 @@ var eventSchema = new mongoose.Schema(
 		verificationState: {
 			isVerified: { type: Boolean, default: false },
 			verifiedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-			timestamps: true,
+			// timestamps: true,
 		},
 		author: {
 			type: mongoose.Schema.Types.ObjectId,
