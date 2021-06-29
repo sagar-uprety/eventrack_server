@@ -23,7 +23,15 @@ const userSchema = new mongoose.Schema({
 	phone: {
 		type: Number,
 	},
-	profileUrl: {
+	address: {
+		type: String,
+	},
+	gender: {
+		type: String,
+		min: 2,
+		max: 6,
+	},
+	profileImage: {
 		type: String,
 		default:
 			"https://res.cloudinary.com/eventtrack39823/image/upload/v1615991990/defaultAvatar.jpg",
@@ -37,6 +45,9 @@ const userSchema = new mongoose.Schema({
 		tokenExpiration: { type: Date },
 	},
 	registeredEvents: {
+		type: [mongoose.Schema.Types.ObjectId],
+	},
+	favourites: {
 		type: [mongoose.Schema.Types.ObjectId],
 	},
 	userRole: {
