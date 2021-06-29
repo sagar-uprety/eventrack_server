@@ -20,7 +20,10 @@ const createEvent = async (req, res) => {
 	const event = new Event({
 		title: req.body.title,
 		description: req.body.desc,
-	});
+		categories: req.body.categories,
+	},
+		//TODO: dateTime, location
+	);
 	console.log(req.user); //gives current user data. if used checkUser middleware in this route.
 	try {
 		const savedEvent = await event.save();
@@ -53,7 +56,6 @@ const searchEvents = async (req, res) => {
 	try{
 		const { title }  = req.params;
 		console.log(req.params);
-		console.log('hi');
 		const events = await Event.find({ title: new RegExp(title) });
 		console.log(events)
 		if (!events) {

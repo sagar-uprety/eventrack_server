@@ -4,11 +4,16 @@ const organizationActions = {};
 
 organizationActions.createOrganization = async (req, res) => {
 	try {
-		const { name, email } = req.body;
+		const { name, email, contact, website, description } = req.body;
 
 		const newOrganization = new Organization({
 			name: name,
 			email: email,
+			contact: contact,
+			website: website,
+			description: description,
+
+			//TODO: docpath
 		});
 		await newOrganization.save();
 

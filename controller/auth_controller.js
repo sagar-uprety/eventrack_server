@@ -9,8 +9,10 @@ dotenv.config();
 //User SignUp
 const createUser = async (req, res) => {
 	try {
-		const { email, password } = req.body;
-
+		const { name, email, password } = req.body;
+		console.log(req);
+		
+		console.log('created');
 		const user = await User.findOne({
 			email: req.body.email,
 		});
@@ -24,6 +26,7 @@ const createUser = async (req, res) => {
 			const hashedPass = await bcrypt.hash(password, saltRounds);
 
 			const user = new User({
+				name: name,
 				email: email,
 				password: hashedPass,
 			});
@@ -53,6 +56,7 @@ const loginUser = async (req, res) => {
 		const user = await User.findOne({
 			email: email,
 		});
+
 
 		if (user == null) {
 			return res.json("User Not Found");
