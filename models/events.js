@@ -10,6 +10,9 @@ var eventSchema = new mongoose.Schema(
 			type: String,
 			required: true,
 		},
+		eventProfile: {
+			type: String,
+		},
 		categories: {
 			type: [String],
 		},
@@ -21,13 +24,7 @@ var eventSchema = new mongoose.Schema(
 		location: {
 			latitude: Number,
 			longitude: Number,
-			name: String,
-			street: String,
-			locality: String,
-			subLocality: String,
-			administrativeArea: String,
-			subAdministrativeArea: String,
-			country: String,
+			location: String,
 		},
 		verificationState: {
 			isVerified: { type: Boolean, default: false },
