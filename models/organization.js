@@ -3,9 +3,10 @@ import mongoose from "mongoose";
 const organizationSchema = new mongoose.Schema({
 	name: { type: String, min: 5, max: 30, required: true },
 	email: { type: String, required: true, unique: true, min: 5, max: 255 },
-	desription: { type: String, min: 30 },
-	profile: { type: String, default: "Add Default Picture Link" },
+	description: { type: String, min: 30 },
+	profile: { type: String },
 	contact: [{ type: String }],
+	documentUrl: { type: String },
 	verificationState: {
 		isVerified: { type: Boolean, default: false },
 		verifiedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },

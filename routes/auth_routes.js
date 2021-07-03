@@ -19,7 +19,7 @@ router.post(
 	auth_controller.createUser
 );
 
-router.get(
+router.post(
 	"/login",
 	validation(loginSchemaValid, "body"),
 	auth_controller.loginUser
@@ -32,7 +32,7 @@ router.post(
 	auth_controller.uploadProfile
 );
 
-router.post("/verificationToken", auth_controller.sendVerificationToken);
+router.get("/verify", auth_controller.sendVerificationToken);
 
 router.post("/resetToken", auth_controller.sendPasswordResetToken);
 

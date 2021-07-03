@@ -5,28 +5,26 @@ const viewAllEvent = async (req, res) => {
 	try {
 		const event = await Event.find({}).sort({ createdAt: -1 }); //latest events will appear first.
 		if (event.length === 0) {
-			res.json({ message: "No Events found" });
+			res.json({ message: "No Events found", state: false });
 		} else {
-			res.json({ event_list: event });
+			res.json({ event_list: event, state: true });
 		}
 	} catch (err) {
-		res.json({ message: err });
+		res.json({ message: err, state: false });
 		console.log(`Cannot find news due to ${err}`);
 	}
 };
 
 //Create an Event
 const createEvent = async (req, res) => {
-	const event = new Event({
-		title: req.body.title,
-		description: req.body.desc,
-	});
-	console.log(req.user); //gives current user data. if used checkUser middleware in this route.
+	// console.log(req.user); //gives current user data. if used checkUser middleware in this route.
 	try {
-		const savedEvent = await event.save();
-		res.json(savedEvent);
+		const event = new Event(req.body);
+		console.log(event);
+		await event.save();
+		res.json({ message: "Event Saved.", state: true });
 	} catch (err) {
-		res.json({ message: err });
+		res.json({ message: err, state: false });
 		console.log(`Event creation failed due to ${err}`);
 	}
 };
@@ -40,7 +38,7 @@ const viewEventDetail = async (req, res) => {
 			console.log("Cannot Find Event");
 			res.json({ message: "Cannot Find Event" });
 		} else {
-			res.json(eventDetail);
+			res.json({ event: eventDetail, status: true });
 		}
 	} catch (err) {
 		console.log(err);
@@ -50,12 +48,12 @@ const viewEventDetail = async (req, res) => {
 
 //Search Events
 const searchEvents = async (req, res) => {
-	try{
-		const { title }  = req.params;
+	try {
+		const { title } = req.params;
 		console.log(req.params);
-		console.log('hi');
+		console.log("hi");
 		const events = await Event.find({ title: new RegExp(title) });
-		console.log(events)
+		console.log(events);
 		if (!events) {
 			console.log("Cannot Find Event");
 			res.json({ message: "Cannot Find Event" });

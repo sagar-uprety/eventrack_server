@@ -12,8 +12,8 @@ const router = Router();
 //checkUser middleware gives curren user data.
 //see above two middlewares in middlewares/auth_middleware.js
 
-router.get("/", authTokenCheck, event_controller.viewAllEvent);
-router.post("/", checkUser, event_controller.createEvent);
+router.get("/", event_controller.viewAllEvent); //TODO: Add authTokenCheck as middleware
+router.post("/", event_controller.createEvent); //TODO: Add checkUser as middleware
 router.get("/:id", checkUser, event_controller.viewEventDetail);
 router.get("/searchEvents/:title", checkUser, event_controller.searchEvents);
 router.delete("/:id", authTokenCheck, event_controller.deleteEvent);

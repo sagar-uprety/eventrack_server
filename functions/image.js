@@ -26,8 +26,9 @@ const upload = (fileName) => {
  * @returns a secure url of the uploaded Image.
  */
 const uploadImage = async (filePath, { rootFolder, folder, name }) => {
+	var subsequentFolder = rootFolder ? `/${rootFolder}/` + folder : `${folder}`;
 	var result = await cloudinary.uploader.upload(filePath, {
-		folder: `/${rootFolder}/` + folder,
+		folder: subsequentFolder,
 		public_id: name.split(".")[0] + "-" + Date.now().toString(),
 	});
 

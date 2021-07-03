@@ -1,4 +1,5 @@
 import User from "../models/user.js";
+import Event from "../models/events.js";
 import Image from "../functions/image.js";
 import email from "../functions/email.js";
 import bcrypt from "bcrypt";
@@ -9,21 +10,24 @@ dotenv.config();
 //User SignUp
 const createUser = async (req, res) => {
 	try {
-		const { email, password } = req.body;
+		const { name, email, password } = req.body;
 
 		const user = await User.findOne({
 			email: req.body.email,
 		});
 		//If the user is already registered
 		if (user !== null) {
-			res.json("User Already exist");
-			return;
+			return res.json({
+				message: "An user with this email already exists.",
+				state: false,
+			});
 			//If the user is not registered. Create a new user
 		} else {
 			const saltRounds = 10;
 			const hashedPass = await bcrypt.hash(password, saltRounds);
 
 			const user = new User({
+				name: name,
 				email: email,
 				password: hashedPass,
 			});
@@ -32,16 +36,14 @@ const createUser = async (req, res) => {
 			//Create an auth-token (JWT) and send as an header so next time user does not have to login again.
 			const authToken = createToken(user._id);
 			res.header("auth-token", authToken).json({
-				message: "User Registered",
-				"auth-token": authToken,
-				"user-details": user,
+				message: "User has been created.",
+				user: user,
+				state: true,
 			});
-
-			console.log("New user registered");
 		}
 	} catch (err) {
 		console.log(`User creation failed : ${err}`);
-		res.json({ message: err });
+		res.json({ message: err.message, state: false });
 	}
 };
 
@@ -49,13 +51,15 @@ const createUser = async (req, res) => {
 const loginUser = async (req, res) => {
 	try {
 		const { email, password } = req.body;
-
 		const user = await User.findOne({
 			email: email,
 		});
 
 		if (user == null) {
-			return res.json("User Not Found");
+			return res.json({
+				message: "Invalid email/password",
+				state: false,
+			});
 		}
 		//if user in registered
 		else {
@@ -63,25 +67,35 @@ const loginUser = async (req, res) => {
 			const passwordCheck = await bcrypt.compare(password, user.password);
 			//if the password is correct. Then create a token and send to user
 			if (passwordCheck) {
+				//check password
+				const passwordCheck = await bcrypt.compare(password, user.password);
 				await user.checkBlockState(function (isBlocked) {
 					if (!isBlocked) {
 						const authToken = createToken(user._id);
-						return res
-							.header("auth-token", authToken)
-							.json({ message: "User Logged In", "auth-token": authToken });
+						return res.header("auth-token", authToken).json({
+							message: "User Logged In",
+							state: true,
+						});
 					}
 					return res.json({
 						message: `Your account has been blocked until ${user.blockStatus.to}`,
+						state: false,
 					});
 				});
 			}
 			//if it's incorrect password
 			else {
-				res.json("Incorrect Password");
+				return res.json({
+					message: "Invalid email/password",
+					state: false,
+				});
 			}
 		}
 	} catch (err) {
-		console.log(err);
+		return res.json({
+			message: err.message,
+			state: false,
+		});
 	}
 };
 
@@ -100,11 +114,29 @@ const uploadProfile = async (req, res) => {
 
 const sendVerificationToken = async (req, res) => {
 	try {
-		var token = email(req.body.email, "verificationToken");
-		res.json({ token: token });
+		var user = await User.findOne(
+			{ email: req.query.email },
+			{ _id: 1, email: 1, tokenInfo: 1 }
+		);
+
+		if (user == null)
+			return res.json({ message: "Cannot find this account.", state: false });
+
+		var token = await email(req.query.email, "verificationToken");
+
+		user.tokenInfo = {
+			token: token,
+			tokenExpiration: Date.now() + 3600000,
+		};
+
+		await user.save();
+		return res.json({
+			message: `A token has been sent to ${user.email}.`,
+			status: true,
+		});
 	} catch (err) {
 		console.log(err);
-		res.json(err);
+		res.json({ message: err.message, state: false });
 	}
 };
 
