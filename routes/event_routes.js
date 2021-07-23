@@ -1,4 +1,3 @@
-// router.get("/", checkUser, auth_controller.getAllUsers);
 import { Router } from "express";
 import event_controller from "../controller/event_controller.js";
 import { authTokenCheck, checkUser } from "../middlewares/auth_middleware.js";
@@ -12,10 +11,11 @@ const router = Router();
 //checkUser middleware gives curren user data.
 //see above two middlewares in middlewares/auth_middleware.js
 
-router.get("/", event_controller.viewAllEvent); //TODO: Add authTokenCheck as middleware
-router.post("/", event_controller.createEvent); //TODO: Add checkUser as middleware
-router.get("/:id", checkUser, event_controller.viewEventDetail);
-router.get("/searchEvents/:title", checkUser, event_controller.searchEvents);
+router.get("/", authTokenCheck, event_controller.viewAllEvent);
+router.post("/", authTokenCheck, event_controller.createEvent);
+router.get("/search", authTokenCheck, event_controller.searchEvents);
+router.get("/:id", authTokenCheck, event_controller.viewEventDetail);
+router.post("/:id", checkUser, event_controller.register);
 router.delete("/:id", authTokenCheck, event_controller.deleteEvent);
 
 export default router;

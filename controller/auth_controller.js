@@ -1,6 +1,4 @@
 import User from "../models/user.js";
-import Event from "../models/events.js";
-import Image from "../functions/image.js";
 import email from "../functions/email.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
@@ -99,19 +97,6 @@ const loginUser = async (req, res) => {
 	}
 };
 
-const uploadProfile = async (req, res) => {
-	try {
-		var url = await Image.uploadImage(req.file.path, {
-			rootFolder: "users",
-			folder: req.user.name + "-" + req.user._id,
-			name: req.file.originalname,
-		});
-		res.json(url);
-	} catch (error) {
-		console.log(error);
-	}
-};
-
 const sendVerificationToken = async (req, res) => {
 	try {
 		var user = await User.findOne(
@@ -171,7 +156,6 @@ export default {
 	createUser,
 	loginUser,
 	logoutUser,
-	uploadProfile,
 	sendVerificationToken,
 	sendPasswordResetToken,
 };

@@ -7,6 +7,7 @@ import connectDatabase from "./services/db_connection.js";
 import connectCloudinary from "./services/cloudinary_connection.js";
 
 import authRoutes from "./routes/auth_routes.js";
+import userRoutes from "./routes/user_routes.js";
 import organizationRoutes from "./routes/organization_routes.js";
 import eventRoutes from "./routes/event_routes.js";
 import adminRoutes from "./routes/admin_routes.js";
@@ -31,6 +32,9 @@ connectCloudinary();
 
 //auth routes
 app.use("/auth", authRoutes);
+
+//user routes
+app.use("/user", userRoutes);
 
 //organization Routes
 app.use("/org", organizationRoutes);

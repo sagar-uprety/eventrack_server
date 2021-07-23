@@ -1,8 +1,7 @@
 import { Router } from "express";
-import { authTokenCheck, checkUser } from "../middlewares/auth_middleware.js";
+// import { authTokenCheck, checkUser } from "../middlewares/auth_middleware.js";
 import auth_controller from "../controller/auth_controller.js";
 import validation from "../middlewares/validation_middleware.js"; //JOI Validation Middleware for models.
-import image from "../functions/image.js";
 
 import {
 	signupSchemaValid,
@@ -23,13 +22,6 @@ router.post(
 	"/login",
 	validation(loginSchemaValid, "body"),
 	auth_controller.loginUser
-);
-
-router.post(
-	"/uploadProfile",
-	checkUser,
-	image.upload("profile"),
-	auth_controller.uploadProfile
 );
 
 router.get("/verify", auth_controller.sendVerificationToken);
