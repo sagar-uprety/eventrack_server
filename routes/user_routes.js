@@ -5,6 +5,7 @@ import image from "../functions/image.js";
 
 const router = Router();
 
+router.get("/", checkUser, user_controller.getCurrentUser);
 router.get("/myEvents", checkUser, user_controller.getMyEvents);
 router.get("/myfavourites", checkUser, user_controller.getMyFavourites);
 

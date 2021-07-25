@@ -71,6 +71,7 @@ const loginUser = async (req, res) => {
 						const authToken = createToken(user._id);
 						return res.header("auth-token", authToken).json({
 							message: "User Logged In",
+							authToken: authToken,
 							state: true,
 						});
 					}
@@ -114,9 +115,10 @@ const sendVerificationToken = async (req, res) => {
 		};
 
 		await user.save();
+		console.log(user.tokenInfo);
 		return res.json({
 			message: `A token has been sent to ${user.email}.`,
-			status: true,
+			state: true,
 		});
 	} catch (err) {
 		console.log(err);
