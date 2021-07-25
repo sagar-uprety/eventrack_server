@@ -6,8 +6,8 @@ actions.fetchAllEvents = async (_, res) => {
 	try {
 		var events = await Event.find({});
 
-		if (!events) return res.json({ message: "No Event Found." });
-		return res.json({ events: events });
+		if (!events) return res.json({ message: "No Event Found.", state: true });
+		return res.json({ events: events, state: true });
 	} catch (error) {
 		return res.json({ message: error });
 	}

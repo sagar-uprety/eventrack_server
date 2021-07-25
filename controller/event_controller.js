@@ -5,27 +5,58 @@ const viewAllEvent = async (req, res) => {
 	try {
 		const event = await Event.find({}).sort({ createdAt: -1 }); //latest events will appear first.
 		if (event.length === 0) {
-			res.json({ message: "No Events found", state: false });
+			return res.json({ message: "No Events found", state: false });
 		} else {
-			res.json({ event_list: event, state: true });
+			return res.json({ event_list: event, state: true });
 		}
 	} catch (err) {
-		res.json({ message: err, state: false });
-		console.log(`Cannot find news due to ${err}`);
+		return res.json({ message: err, state: false });
 	}
 };
 
 //Create an Event
 const createEvent = async (req, res) => {
-	// console.log(req.user); //gives current user data. if used checkUser middleware in this route.
 	try {
 		const event = new Event(req.body);
 		console.log(event);
 		await event.save();
-		res.json({ message: "Event Saved.", state: true });
+		return res.json({ message: "Event Saved.", state: true });
 	} catch (err) {
-		res.json({ message: err, state: false });
-		console.log(`Event creation failed due to ${err}`);
+		return res.json({ message: err, state: false });
+	}
+};
+
+const register = async (req, res) => {
+	try {
+		const id = req.params.id;
+		const event = await Event.findById(id);
+		const currentUser = req.user;
+
+		if (!event)
+			return res.json({ message: "Cannot Find Event.", state: false });
+		else {
+			var message = "";
+			if (!event.registeredUsers.includes(currentUser._id)) {
+				event.registeredUsers.push(currentUser._id);
+				currentUser.registeredEvents.push(event._id);
+				message = `Successfully registered to the event ${event.title.toUpperCase()}`;
+			} else {
+				event.registeredUsers.splice(
+					event.registeredUsers.indexOf(currentUser._id),
+					1
+				);
+				currentUser.registeredEvents.splice(
+					currentUser.registeredEvents.indexOf(event._id),
+					1
+				);
+				message = `Removed your registration to the event ${event.title.toUpperCase()}`;
+			}
+			await event.save();
+			await currentUser.save();
+			return res.json({ message: message, state: true });
+		}
+	} catch (err) {
+		return res.json({ message: err, state: false });
 	}
 };
 
@@ -36,33 +67,36 @@ const viewEventDetail = async (req, res) => {
 		const eventDetail = await Event.findById(eventID);
 		if (!eventDetail) {
 			console.log("Cannot Find Event");
-			res.json({ message: "Cannot Find Event" });
+			return res.json({ message: "Cannot Find Event", state: false });
 		} else {
-			res.json({ event: eventDetail, status: true });
+			return res.json({ event: eventDetail, status: true });
 		}
 	} catch (err) {
-		console.log(err);
-		res.json({ message: err });
+		return res.json({ message: err, state: false });
 	}
 };
 
 //Search Events
 const searchEvents = async (req, res) => {
 	try {
-		const { title } = req.params;
-		console.log(req.params);
-		console.log("hi");
-		const events = await Event.find({ title: new RegExp(title) });
-		console.log(events);
-		if (!events) {
-			console.log("Cannot Find Event");
-			res.json({ message: "Cannot Find Event" });
-		} else {
-			res.json(events);
-		}
+		const { text, category, date } = req.query;
+
+		const events = await Event.find(
+			{
+				title: new RegExp(text, "i"),
+				categories: category ? { $in: category } : { $exists: true },
+				"dateTime.dates.0": date
+					? { $gte: date[0], $lte: date[1] }
+					: { $exists: true },
+			},
+			{ title: 1, categories: 1, dateTime: 1 }
+		);
+
+		if (!events) return res.json({ message: "No events found.", state: false });
+		return res.json({ event_list: events, state: true });
 	} catch (err) {
 		console.log(err);
-		res.json({ message: err });
+		return res.json({ message: err, state: false });
 	}
 };
 
@@ -72,20 +106,24 @@ const deleteEvent = async (req, res) => {
 
 		if (!deletedNews) {
 			console.log("Event Not Found");
-			res.json({ message: "Event Not Found" }); //text
+			return res.json({ message: "Event Not Found", state: false }); //text
 		} else {
 			console.log("Event Deleted Successfully");
-			res.json(deletedNews);
+			return res.json({
+				message: "Successfully Deleted the Event.",
+				state: true,
+			});
 		}
 	} catch (err) {
 		console.log(`Error occured while deleting due to ${err}`);
-		res.json({ message: err });
+		return res.json({ message: err, state: false });
 	}
 };
 
 export default {
 	viewAllEvent,
 	createEvent,
+	register,
 	viewEventDetail,
 	searchEvents,
 	deleteEvent,

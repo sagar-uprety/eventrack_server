@@ -1,6 +1,4 @@
 import User from "../models/user.js";
-import Event from "../models/events.js";
-import Image from "../functions/image.js";
 import email from "../functions/email.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
@@ -11,7 +9,6 @@ dotenv.config();
 const createUser = async (req, res) => {
 	try {
 		const { name, email, password } = req.body;
-
 		const user = await User.findOne({
 			email: req.body.email,
 		});
@@ -74,6 +71,7 @@ const loginUser = async (req, res) => {
 						const authToken = createToken(user._id);
 						return res.header("auth-token", authToken).json({
 							message: "User Logged In",
+							authToken: authToken,
 							state: true,
 						});
 					}
@@ -99,6 +97,7 @@ const loginUser = async (req, res) => {
 	}
 };
 
+<<<<<<< HEAD
 const uploadProfile = async (req, res) => {
 	try {
 		var url = await Image.uploadImage(req.file.path, {
@@ -150,6 +149,8 @@ const verifyToken = async (req, res) => {
 
 
 
+=======
+>>>>>>> main
 const sendVerificationToken = async (req, res) => {
 	try {
 		var user = await User.findOne(
@@ -168,9 +169,10 @@ const sendVerificationToken = async (req, res) => {
 		};
 
 		await user.save();
+		console.log(user.tokenInfo);
 		return res.json({
 			message: `A token has been sent to ${user.email}.`,
-			status: true,
+			state: true,
 		});
 	} catch (err) {
 		console.log(err);
@@ -209,7 +211,6 @@ export default {
 	createUser,
 	loginUser,
 	logoutUser,
-	uploadProfile,
 	sendVerificationToken,
 	verifyToken,
 	sendPasswordResetToken,
