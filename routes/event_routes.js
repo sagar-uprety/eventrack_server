@@ -8,10 +8,10 @@ const router = Router();
 //TODO: Find and implement proper use case for checkUser middleware
 
 //authTokenCheck checks if the user is logged in and has access token. If it has only then allow the user to visit that route
-//checkUser middleware gives curren user data.
+//checkUser middleware gives current user data.
 //see above two middlewares in middlewares/auth_middleware.js
 
-router.get("/", authTokenCheck, event_controller.viewAllEvent);
+router.get("/", event_controller.viewAllEvent);
 router.post("/", authTokenCheck, event_controller.createEvent);
 router.get("/search", authTokenCheck, event_controller.searchEvents);
 router.get("/:id", authTokenCheck, event_controller.viewEventDetail);

@@ -2,6 +2,10 @@ import User from "../models/user.js";
 import Event from "../models/events.js";
 import Image from "../functions/image.js";
 
+const getCurrentUser = async (req, res) => {
+	return res.json({ user: req.user, state: true });
+};
+
 const getMyEvents = async (req, res) => {
 	try {
 		const myEvents = req.user.registeredEvents;
@@ -49,6 +53,7 @@ const uploadProfile = async (req, res) => {
 
 export default {
 	getMyEvents,
+	getCurrentUser,
 	getMyFavourites,
 	uploadProfile,
 };
