@@ -1,6 +1,6 @@
 import User from "../models/user.js";
 import email from "../functions/email.js";
-import bcrypt from "bcrypt";
+import bcrypt, { hash } from "bcrypt";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 dotenv.config();
@@ -128,13 +128,85 @@ const sendVerificationToken = async (req, res) => {
 
 const sendPasswordResetToken = async (req, res) => {
 	try {
-		var token = email(req.body.email, "resetToken");
+		var user = await User.findOne(
+			{ email: req.query.email },
+			{ _id: 1, email: 1, tokenInfo: 1 }
+		);
+		console.log(req.query.email);
+		if (user == null)
+			return res.json({ message: "Cannot find this account.", state: false });
+
+		var token = await email(req.query.email, "resetToken");
+			
+		user.tokenInfo = {
+			token: token,
+			tokenExpiration: Date.now() + 3600000,
+		};
+
+		await user.save();
+		console.log(user.tokenInfo);
+		return res.json({
+			message: `A token has been sent to ${user.email}.`,
+			state: true,
+		});
 		res.json({ token: token });
+		
 	} catch (err) {
 		console.log(err);
 		res.json(err);
 	}
 };
+
+const verifyPasswordResetToken = async(req,res)=>{
+	try{
+		const { token } = req.body;
+		var user = await User.findOne(
+		{ 'tokenInfo.token': token , 'tokenInfo.tokenExpiration': { $gt: Date.now() } },
+		function(err, user){
+			if (!user)
+				return res.json({ message: "Verification code has expired or is invalid.", state: false });
+			user.tokenInfo = undefined;
+			user.save();
+			res.json({message: "Token has been verified", state: true});
+		}
+		);
+		console.log(token);
+		
+	}catch (err) {
+		console.log(err);
+		res.json(err);
+	}
+};
+
+const passwordReset = async(req, res) => {
+	try {
+		const {	email, password } = req.body;
+		var user = await User.findOne(
+			{ email: email, },
+		);
+		console.log(email);
+		if (user == null) {
+			return res.json({
+				message: "Cannot find this account.",
+				state: false,
+			});
+		} else {
+			const saltRounds = 10;
+			const hashedPass = await bcrypt.hash(password, saltRounds);
+			user.password = hashedPass;
+			console.log(hashedPass);
+			// "$2b$10$1tEV4XtEhSwDGJyBED5alusDoXRtXCALXH0knpsolRb5WduOFtEqq"
+			user.save();
+			return res.json({
+				message: "Changed password succesfully.",
+				state: true,
+			});
+		}
+	} catch (err) {
+		console.log(`User creation failed : ${err}`);
+		res.json({ message: err.message, state: false });
+	}
+}
 
 // Do this from Flutter
 const logoutUser = (_, res) => {
@@ -159,4 +231,6 @@ export default {
 	logoutUser,
 	sendVerificationToken,
 	sendPasswordResetToken,
+	verifyPasswordResetToken,
+	passwordReset,
 };
