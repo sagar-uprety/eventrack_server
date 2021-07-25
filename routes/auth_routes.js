@@ -32,7 +32,9 @@ router.post(
 	auth_controller.uploadProfile
 );
 
-router.get("/verify", auth_controller.sendVerificationToken);
+router.get("/verify", auth_controller.sendverificationToken);
+
+router.post("/verify", auth_controller.verifyToken);
 
 router.post("/resetToken", auth_controller.sendPasswordResetToken);
 

@@ -112,6 +112,44 @@ const uploadProfile = async (req, res) => {
 	}
 };
 
+const verifyToken = async (req, res) => {
+	try {
+		User.findOne({
+			tokenInfo: req.body.token,
+			tokenExpiration: { $gt: Date.now() },
+		},
+			async function (err, user) {
+				if (!user) {
+					return res.json({
+						message: " Sorry! User not found",
+						state: false,
+					});
+				}
+				user.hasVerifiedEmail = true;
+				user.tokenInfo = undefined;
+				// user.tokenExpiration = undefined;
+				await user.save(
+
+				);
+				return res.json({
+					message: "Email is verified.",
+					state: true,
+				})
+			}
+		);
+
+	}
+	catch (err) {
+		return res.json({
+			message: "OOPS! Your Email is not verified",
+			state: false,
+		});
+	}
+
+};
+
+
+
 const sendVerificationToken = async (req, res) => {
 	try {
 		var user = await User.findOne(
@@ -173,5 +211,7 @@ export default {
 	logoutUser,
 	uploadProfile,
 	sendVerificationToken,
+	verifyToken,
 	sendPasswordResetToken,
+
 };
