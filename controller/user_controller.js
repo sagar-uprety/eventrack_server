@@ -4,35 +4,23 @@ import Organization from "../models/organization.js";
 import Image from "../functions/image.js";
 
 const getCurrentUserData = async (req, res) => {
-	const events = await Event.find(
-		{ "dateTime.dates.0": { $gt: Date.now() } },
-		{ registeredUsers: 0 }
-	);
-	var organization;
-	if (req.user.organization) {
-		organization = await Organization.findById(req.user.organization, {
-			blockStatus: 0,
-		});
-		return res.json({
-			user: req.user,
-			organization: organization,
-			state: true,
-		});
-	}
-	if (events)
-		return res.json({
-			user: req.user,
-			organization: organization,
-			event_list: events,
-			state: true,
-		});
-	// console.log(
-	// 	`User: ${req.user}\n\nOrganization: ${organization}\n\nEvents:${events}`
-	// );
-	return res.json({
+	var jsonResult = {};
+	jsonResult = {
 		user: req.user,
 		state: true,
+	};
+
+	if (req.user.organization) {
+		var organization = await Organization.findById(req.user.organization, {
+			blockStatus: 0,
+		});
+		jsonResult.organization = organization;
+	}
+	const events = await Event.find({}, { registeredUsers: 0 }).sort({
+		"dateTime.dates.0": 1,
 	});
+	if (events) jsonResult.event_list = events;
+	return res.json(jsonResult);
 };
 
 const getMyEvents = async (req, res) => {
