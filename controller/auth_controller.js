@@ -97,7 +97,6 @@ const loginUser = async (req, res) => {
 	}
 };
 
-<<<<<<< HEAD
 const uploadProfile = async (req, res) => {
 	try {
 		var url = await Image.uploadImage(req.file.path, {
@@ -149,8 +148,6 @@ const verifyToken = async (req, res) => {
 
 
 
-=======
->>>>>>> main
 const sendVerificationToken = async (req, res) => {
 	try {
 		var user = await User.findOne(
