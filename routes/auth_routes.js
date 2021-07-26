@@ -24,14 +24,7 @@ router.post(
 	auth_controller.loginUser
 );
 
-router.post(
-	"/uploadProfile",
-	checkUser,
-	image.upload("profile"),
-	auth_controller.uploadProfile
-);
-
-router.get("/verify", auth_controller.sendverificationToken);
+router.get("/verify", auth_controller.sendVerificationToken);
 
 router.post("/verify", auth_controller.verifyToken);
 
