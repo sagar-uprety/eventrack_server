@@ -4,10 +4,10 @@ import Organization from "../models/organization.js";
 import Image from "../functions/image.js";
 
 const getCurrentUserData = async (req, res) => {
-	// const events = await Event.find(
-	// 	{ "dateTime.dates.0": { $gt: Date.now() } },
-	// 	{ registeredUsers: 0 }
-	// );
+	const events = await Event.find(
+		{ "dateTime.dates.0": { $gt: Date.now() } },
+		{ registeredUsers: 0 }
+	);
 	var organization;
 	if (req.user.organization) {
 		organization = await Organization.findById(req.user.organization, {
@@ -19,26 +19,18 @@ const getCurrentUserData = async (req, res) => {
 			state: true,
 		});
 	}
-	// 	return res.json({
-	// 		user: req.user,
-	// 		organization: organization,
-	// 		event_list: events,
-	// 		state: true,
-	// 	});
-	// }
-	// if (events) {
-	// 	return res.json({
-	// 		user: req.user,
-	// 		event_list: events,
-	// 		state: true,
-	// 	});
-	// }
+	if (events)
+		return res.json({
+			user: req.user,
+			organization: organization,
+			event_list: events,
+			state: true,
+		});
 	// console.log(
 	// 	`User: ${req.user}\n\nOrganization: ${organization}\n\nEvents:${events}`
 	// );
 	return res.json({
 		user: req.user,
-		// organization: organization,
 		state: true,
 	});
 };
