@@ -1,4 +1,5 @@
 import Event from "../models/events.js";
+import Organization from "../models/organization.js";
 
 //Get all Events
 const viewAllEvent = async (req, res) => {
@@ -17,10 +18,22 @@ const viewAllEvent = async (req, res) => {
 //Create an Event
 const createEvent = async (req, res) => {
 	try {
-		const event = new Event(req.body);
-		console.log(event);
-		await event.save();
-		return res.json({ message: "Event Saved.", state: true });
+		if (req.user.organization) {
+			const organization = await Organization.findById(req.user.organization, {
+				_id: 1,
+				events: 1,
+			});
+			if (organization) {
+				const event = new Event(req.body);
+				event.author = req.user.organization;
+				organization.events.push(event._id);
+				await event.save();
+				await organization.save();
+
+				return res.json({ message: "Event Saved.", state: true });
+			}
+		}
+		return res.json({ message: "Organization not found.", state: false });
 	} catch (err) {
 		return res.json({ message: err, state: false });
 	}
@@ -75,6 +88,8 @@ const viewEventDetail = async (req, res) => {
 		return res.json({ message: err, state: false });
 	}
 };
+
+Event.find({ _id: { $in: list } });
 
 //Search Events
 const searchEvents = async (req, res) => {

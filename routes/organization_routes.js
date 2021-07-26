@@ -13,7 +13,7 @@ router.post(
 	"/",
 	checkUser,
 	validation(createOrgValid, "body"),
-	File.upload("documentFile"),
+	// File.upload("documentFile"),
 	organization_controller.createOrganization
 ); //TODO: Add `checkUser` as middleware.
 

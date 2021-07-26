@@ -14,7 +14,7 @@ const router = Router();
 //see above two middlewares in middlewares/auth_middleware.js
 
 router.get("/", event_controller.viewAllEvent);
-router.post("/", authTokenCheck, event_controller.createEvent);
+router.post("/", checkUser, event_controller.createEvent);
 router.get("/search", authTokenCheck, event_controller.searchEvents);
 router.get("/:id", authTokenCheck, event_controller.viewEventDetail);
 router.post("/:id", checkUser, event_controller.register);
