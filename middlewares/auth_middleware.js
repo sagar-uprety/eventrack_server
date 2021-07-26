@@ -22,7 +22,7 @@ const authTokenCheck = (req, res, next) => {
 	if (isAuthenticated(req.headers)) {
 		next();
 	} else {
-		res.status(400).json({ message: "Invalid Token" });
+		res.status(400).json({ message: "Invalid Token", state: false });
 	}
 };
 
@@ -40,7 +40,7 @@ const checkUser = async (req, res, next) => {
 		req.user = user; //returns acutal User Model - Mongo
 		next();
 	} else {
-		res.status(400).json({ message: "Invalid Token" });
+		res.status(400).json({ message: "Invalid Token", state: false });
 	}
 };
 
@@ -51,7 +51,8 @@ const checkUser = async (req, res, next) => {
  */
 
 const checkBlockState = (status) => {
-	if (!status) return res.json({ message: "Invalid Block Status" });
+	if (!status)
+		return res.json({ message: "Invalid Block Status", state: false });
 	if (status.isBlocked) {
 		if (Date.now() >= status.to) {
 			status = {

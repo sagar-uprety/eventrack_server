@@ -5,14 +5,14 @@ import image from "../functions/image.js";
 
 const router = Router();
 
-router.get("/", checkUser, user_controller.getCurrentUser);
+router.get("/", checkUser, user_controller.getCurrentUserData);
 router.get("/myEvents", checkUser, user_controller.getMyEvents);
 router.get("/myfavourites", checkUser, user_controller.getMyFavourites);
 
 router.post(
 	"/uploadProfile",
 	checkUser,
-	image.upload("profile"),
+	image.upload("image"),
 	user_controller.uploadProfile
 );
 

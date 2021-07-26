@@ -1,9 +1,46 @@
 import User from "../models/user.js";
 import Event from "../models/events.js";
+import Organization from "../models/organization.js";
 import Image from "../functions/image.js";
 
-const getCurrentUser = async (req, res) => {
-	return res.json({ user: req.user, state: true });
+const getCurrentUserData = async (req, res) => {
+	// const events = await Event.find(
+	// 	{ "dateTime.dates.0": { $gt: Date.now() } },
+	// 	{ registeredUsers: 0 }
+	// );
+	var organization;
+	if (req.user.organization) {
+		organization = await Organization.findById(req.user.organization, {
+			blockStatus: 0,
+		});
+		return res.json({
+			user: req.user,
+			organization: organization,
+			state: true,
+		});
+	}
+	// 	return res.json({
+	// 		user: req.user,
+	// 		organization: organization,
+	// 		event_list: events,
+	// 		state: true,
+	// 	});
+	// }
+	// if (events) {
+	// 	return res.json({
+	// 		user: req.user,
+	// 		event_list: events,
+	// 		state: true,
+	// 	});
+	// }
+	// console.log(
+	// 	`User: ${req.user}\n\nOrganization: ${organization}\n\nEvents:${events}`
+	// );
+	return res.json({
+		user: req.user,
+		// organization: organization,
+		state: true,
+	});
 };
 
 const getMyEvents = async (req, res) => {
@@ -40,12 +77,14 @@ const getMyFavourites = async (req, res) => {
 
 const uploadProfile = async (req, res) => {
 	try {
+		//TODO:Save `url` to req.user
 		var url = await Image.uploadImage(req.file.path, {
 			rootFolder: "users",
+			// folder: "temp",
 			folder: req.user.name + "-" + req.user._id,
 			name: req.file.originalname,
 		});
-		res.json({ message: "Profile Picture Updated.", state: true });
+		res.json({ message: "Profile Picture Updated.\nURL: " + url, state: true });
 	} catch (error) {
 		console.log({ message: error, state: false });
 	}
@@ -53,7 +92,7 @@ const uploadProfile = async (req, res) => {
 
 export default {
 	getMyEvents,
-	getCurrentUser,
+	getCurrentUserData,
 	getMyFavourites,
 	uploadProfile,
 };
