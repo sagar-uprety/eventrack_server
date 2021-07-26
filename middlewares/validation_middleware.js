@@ -4,7 +4,6 @@ const validationMiddleware = (schema, property) => {
 	return (req, res, next) => {
 		const { error, value } = schema.validate(req[property]); //req['body']
 		const valid = error == null; //if valid
-
 		if (valid) {
 			console.log("Data Format Validated");
 			next();

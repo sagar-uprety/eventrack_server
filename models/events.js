@@ -26,11 +26,6 @@ var eventSchema = new mongoose.Schema(
 			longitude: Number,
 			location: String,
 		},
-		verificationState: {
-			isVerified: { type: Boolean, default: false },
-			verifiedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-			date: Date,
-		},
 		author: {
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "Organization",
