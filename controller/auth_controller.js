@@ -97,6 +97,51 @@ const loginUser = async (req, res) => {
 	}
 };
 
+const uploadProfile = async (req, res) => {
+	try {
+		var url = await Image.uploadImage(req.file.path, {
+			rootFolder: "users",
+			folder: req.user.name + "-" + req.user._id,
+			name: req.file.originalname,
+		});
+		res.json(url);
+	} catch (error) {
+		console.log(error);
+	}
+};
+
+const verifyToken = async (req, res) => {
+	try {
+		User.findOne(
+			{
+				tokenInfo: req.body.token,
+				tokenExpiration: { $gt: Date.now() },
+			},
+			async function (err, user) {
+				if (!user) {
+					return res.json({
+						message: " Sorry! User not found",
+						state: false,
+					});
+				}
+				user.hasVerifiedEmail = true;
+				user.tokenInfo = undefined;
+				// user.tokenExpiration = undefined;
+				await user.save();
+				return res.json({
+					message: "Email is verified.",
+					state: true,
+				});
+			}
+		);
+	} catch (err) {
+		return res.json({
+			message: "OOPS! Your Email is not verified",
+			state: false,
+		});
+	}
+};
+
 const sendVerificationToken = async (req, res) => {
 	try {
 		var user = await User.findOne(
@@ -137,7 +182,7 @@ const sendPasswordResetToken = async (req, res) => {
 			return res.json({ message: "Cannot find this account.", state: false });
 
 		var token = await email(req.query.email, "resetToken");
-			
+
 		user.tokenInfo = {
 			token: token,
 			tokenExpiration: Date.now() + 3600000,
@@ -149,41 +194,42 @@ const sendPasswordResetToken = async (req, res) => {
 			message: `A token has been sent to ${user.email}.`,
 			state: true,
 		});
-		res.json({ token: token });
-		
 	} catch (err) {
 		console.log(err);
 		res.json(err);
 	}
 };
 
-const verifyPasswordResetToken = async(req,res)=>{
-	try{
+const verifyPasswordResetToken = async (req, res) => {
+	try {
 		const { token } = req.body;
 		var user = await User.findOne(
-		{ 'tokenInfo.token': token , 'tokenInfo.tokenExpiration': { $gt: Date.now() } },
-		function(err, user){
-			if (!user)
-				return res.json({ message: "Verification code has expired or is invalid.", state: false });
-			user.tokenInfo = undefined;
-			user.save();
-			res.json({message: "Token has been verified", state: true});
-		}
+			{
+				"tokenInfo.token": token,
+				"tokenInfo.tokenExpiration": { $gt: Date.now() },
+			},
+			function (err, user) {
+				if (!user)
+					return res.json({
+						message: "Verification code has expired or is invalid.",
+						state: false,
+					});
+				user.tokenInfo = undefined;
+				user.save();
+				res.json({ message: "Token has been verified", state: true });
+			}
 		);
 		console.log(token);
-		
-	}catch (err) {
+	} catch (err) {
 		console.log(err);
 		res.json(err);
 	}
 };
 
-const passwordReset = async(req, res) => {
+const passwordReset = async (req, res) => {
 	try {
-		const {	email, password } = req.body;
-		var user = await User.findOne(
-			{ email: email, },
-		);
+		const { email, password } = req.body;
+		var user = await User.findOne({ email: email });
 		console.log(email);
 		if (user == null) {
 			return res.json({
@@ -206,7 +252,7 @@ const passwordReset = async(req, res) => {
 		console.log(`User creation failed : ${err}`);
 		res.json({ message: err.message, state: false });
 	}
-}
+};
 
 // Do this from Flutter
 const logoutUser = (_, res) => {
@@ -230,6 +276,7 @@ export default {
 	loginUser,
 	logoutUser,
 	sendVerificationToken,
+	verifyToken,
 	sendPasswordResetToken,
 	verifyPasswordResetToken,
 	passwordReset,
