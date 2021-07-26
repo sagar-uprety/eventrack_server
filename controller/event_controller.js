@@ -21,12 +21,15 @@ const createEvent = async (req, res) => {
 		if (req.user.organization) {
 			const organization = await Organization.findById(req.user.organization, {
 				_id: 1,
+				events: 1,
 			});
 			if (organization) {
 				const event = new Event(req.body);
 				event.author = req.user.organization;
-				console.log(event);
+				organization.events.push(event._id);
 				await event.save();
+				await organization.save();
+
 				return res.json({ message: "Event Saved.", state: true });
 			}
 		}
@@ -85,6 +88,8 @@ const viewEventDetail = async (req, res) => {
 		return res.json({ message: err, state: false });
 	}
 };
+
+Event.find({ _id: { $in: list } });
 
 //Search Events
 const searchEvents = async (req, res) => {
