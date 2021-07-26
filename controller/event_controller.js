@@ -4,7 +4,9 @@ import Organization from "../models/organization.js";
 //Get all Events
 const viewAllEvent = async (req, res) => {
 	try {
-		const event = await Event.find({}).sort({ createdAt: -1 }); //latest events will appear first.
+		const event = await Event.find({
+			"dateTime.dates.0": { $gte: Date.now() },
+		}).sort({ createdAt: -1 }); //latest events will appear first.
 		if (event.length === 0) {
 			return res.json({ message: "No Events found", state: false });
 		} else {
@@ -88,8 +90,6 @@ const viewEventDetail = async (req, res) => {
 		return res.json({ message: err, state: false });
 	}
 };
-
-Event.find({ _id: { $in: list } });
 
 //Search Events
 const searchEvents = async (req, res) => {
