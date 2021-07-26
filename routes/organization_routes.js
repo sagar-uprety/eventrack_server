@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { checkUser } from "../middlewares/auth_middleware.js";
+import { authTokenCheck, checkUser } from "../middlewares/auth_middleware.js";
 import File from "../functions/image.js";
 
 import validation from "../middlewares/validation_middleware.js";
@@ -10,11 +10,13 @@ const router = Router();
 
 //TODO: Add JOI Validation Schema
 router.post(
-	"/",
-	checkUser,
-	validation(createOrgValid, "body"),
-	// File.upload("documentFile"),
-	organization_controller.createOrganization
+  "/",
+  checkUser,
+  validation(createOrgValid, "body"),
+  // File.upload("documentFile"),
+  organization_controller.createOrganization
 ); //TODO: Add `checkUser` as middleware.
+
+router.get("/getevents", authTokenCheck, organization_controller.getCreatedEvents);
 
 export default router;

@@ -1,6 +1,6 @@
 import Event from "../models/events.js";
 import Organization from "../models/organization.js";
-
+import User from "../models/user.js";
 //Get all Events
 const viewAllEvent = async (req, res) => {
   try {
