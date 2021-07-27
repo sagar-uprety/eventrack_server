@@ -89,7 +89,6 @@ const viewEventDetail = async (req, res) => {
 	}
 };
 
-Event.find({ _id: { $in: list } });
 
 //Search Events
 const searchEvents = async (req, res) => {
