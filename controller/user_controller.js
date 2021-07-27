@@ -60,10 +60,21 @@ const addtoFavourites = async (req, res) => {
   try {
     const event = req.params.id;
     const user = req.user;
-    await user.favourites.push(event);
-    user.save();
+    console.log(user.favourites.includes(event));
+    if (!user.favourites.includes(event)) {
+      user.favourites.push(event);
+      message = "Added to favourites.";
+    } else {
+      console.log(user.favourites.indexOf(event));
+      user.favourites.splice(user.favourites.indexOf(event), 1);
+      console.log(`length: ${user.favorites.length}`);
+      message = "Removed from favourites";
+    }
+    print("hello");
+    await user.save();
+    console.log(message);
     return res.json({
-      message: "Successfully added to Favourites",
+      message: message,
       state: true,
     });
   } catch (error) {
