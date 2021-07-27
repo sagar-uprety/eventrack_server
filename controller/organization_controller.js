@@ -57,4 +57,28 @@ const getCreatedEvents = async (req, res) => {
 	}
 };
 
-export default { createOrganization, getCreatedEvents };
+const uploadProfile = async (req, res) => {
+	try {
+		var organization = await Organization.findById({
+			_id: req.user.organization,
+		});
+		var url = await File.uploadImage(req.file.path, {
+			rootFolder: "organization",
+			folder: organization.name + "-" + organization._id,
+			name: req.file.originalname,
+		});
+		organization.profile = url;
+		await organization.save();
+
+		return res.json({
+			message: "Organization Profile Updated.",
+			organization: organization,
+			state: true,
+		});
+	} catch (error) {
+		console.log(error);
+		return res.json({ message: error.message, state: false });
+	}
+};
+
+export default { createOrganization, getCreatedEvents, uploadProfile };

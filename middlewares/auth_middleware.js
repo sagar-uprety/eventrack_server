@@ -2,16 +2,16 @@ import jwt from "jsonwebtoken";
 import User from "../models/user.js";
 
 const isAuthenticated = (headers) => {
-  const authToken = headers["auth-token"];
-  if (!authToken) return false;
+	const authToken = headers["auth-token"];
+	if (!authToken) return false;
 
-  try {
-    const verifyToken = jwt.verify(authToken, process.env.AUTH_TOKEN_SECRET);
-    return verifyToken;
-  } catch (err) {
-    console.log(`Error ${err}`);
-    return null;
-  }
+	try {
+		const verifyToken = jwt.verify(authToken, process.env.AUTH_TOKEN_SECRET);
+		return verifyToken;
+	} catch (err) {
+		console.log(`Error ${err}`);
+		return null;
+	}
 };
 
 /**
@@ -19,12 +19,11 @@ const isAuthenticated = (headers) => {
  */
 
 const authTokenCheck = (req, res, next) => {
-  //   console.log(req.headers);
-  if (isAuthenticated(req.headers)) {
-    next();
-  } else {
-    res.status(400).json({ message: "Invalid Token", state: false });
-  }
+	if (isAuthenticated(req.headers)) {
+		next();
+	} else {
+		res.status(400).json({ message: "Invalid Token", state: false });
+	}
 };
 
 /**
@@ -32,17 +31,17 @@ const authTokenCheck = (req, res, next) => {
  */
 
 const checkUser = async (req, res, next) => {
-  const token = isAuthenticated(req.headers);
+	const token = isAuthenticated(req.headers);
 
-  if (token) {
-    let user = await User.findById(token._id);
-    // user.blockStatus = checkBlockState(user.blockStatus);
-    // await user.save();
-    req.user = user; //returns acutal User Model - Mongo
-    next();
-  } else {
-    res.status(400).json({ message: "Invalid Token", state: false });
-  }
+	if (token) {
+		let user = await User.findById(token._id);
+		// user.blockStatus = checkBlockState(user.blockStatus);
+		// await user.save();
+		req.user = user; //returns acutal User Model - Mongo
+		next();
+	} else {
+		res.status(400).json({ message: "Invalid Token", state: false });
+	}
 };
 
 /**
@@ -52,15 +51,16 @@ const checkUser = async (req, res, next) => {
  */
 
 const checkBlockState = (status) => {
-  if (!status) return res.json({ message: "Invalid Block Status", state: false });
-  if (status.isBlocked) {
-    if (Date.now() >= status.to) {
-      status = {
-        isBlocked: false,
-      };
-    }
-  }
-  return status;
+	if (!status)
+		return res.json({ message: "Invalid Block Status", state: false });
+	if (status.isBlocked) {
+		if (Date.now() >= status.to) {
+			status = {
+				isBlocked: false,
+			};
+		}
+	}
+	return status;
 };
 
 export { authTokenCheck, checkUser };

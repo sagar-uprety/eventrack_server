@@ -3,6 +3,7 @@ import event_controller from "../controller/event_controller.js";
 import { authTokenCheck, checkUser } from "../middlewares/auth_middleware.js";
 import validation from "../middlewares/validation_middleware.js";
 import { createEventValid } from "../models/validation_schema/event_schema.js";
+import Image from "../functions/image.js";
 const router = Router();
 
 //TODO: Add JOI Validation Schema for events as done for user under models/validation_schema
@@ -19,8 +20,9 @@ router.get("/search", authTokenCheck, event_controller.searchEvents);
 router.get("/:id", authTokenCheck, event_controller.viewEventDetail);
 router.post("/:id", checkUser, event_controller.register);
 router.post(
-	"/:id/uploadProfile",
+	"/uploadProfile/:id",
 	authTokenCheck,
+	Image.upload("image"),
 	event_controller.uploadProfile
 );
 router.get(

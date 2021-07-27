@@ -67,7 +67,7 @@ const register = async (req, res) => {
 			}
 			await event.save();
 			await currentUser.save();
-			return res.json({ message: message, state: true });
+			return res.json({ message: message, user: currentUser, state: true });
 		}
 	} catch (err) {
 		return res.json({ message: err, state: false });
@@ -76,28 +76,29 @@ const register = async (req, res) => {
 
 const uploadProfile = async (req, res) => {
 	try {
-		var event = Event.findById(req.params.id);
-
+		var event = await Event.findById(req.params.id);
+		console.log(event);
 		var url = await Image.uploadImage(req.file.path, {
 			rootFolder: "events",
-			folder: req.event.title + "-" + req.user._id,
+			folder: event.title + "-" + event._id,
 			name: req.file.originalname,
 		});
 		event.eventProfile = url;
 		await event.save();
 
-		var events = Event.find({}, { registeredUsers: 0 }).sort({
+		var events = await Event.find({}).sort({
 			"dateTime.dates.0": 1,
 		});
 
-		res.json({
+		return res.json({
 			message: "Event Profile Updated.",
 			event_list: events,
 			event: event,
 			state: true,
 		});
 	} catch (error) {
-		console.log({ message: error, state: false });
+		console.log(error);
+		return res.json({ message: error.message, state: false });
 	}
 };
 

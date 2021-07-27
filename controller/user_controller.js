@@ -14,12 +14,11 @@ const getCurrentUserData = async (req, res) => {
 		var organization = await Organization.findById(req.user.organization, {
 			blockStatus: 0,
 		});
-		jsonResult.organization = organization;
+		if (organization) jsonResult.organization = organization;
 	}
-	const events = await Event.find({}, { registeredUsers: 0 }).sort({
+	const events = await Event.find({}).sort({
 		"dateTime.dates.0": 1,
 	});
-	console.log(events.length);
 	if (events) jsonResult.event_list = events;
 	return res.json(jsonResult);
 };

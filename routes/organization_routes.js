@@ -15,7 +15,14 @@ router.post(
 	validation(createOrgValid, "body"),
 	// File.upload("documentFile"),
 	organization_controller.createOrganization
-); //TODO: Add `checkUser` as middleware.
+);
+
+router.post(
+	"/uploadProfile",
+	checkUser,
+	File.upload("image"),
+	organization_controller.uploadProfile
+);
 
 router.get(
 	"/getevents/:id",
