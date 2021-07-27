@@ -19,6 +19,7 @@ const getCurrentUserData = async (req, res) => {
   const events = await Event.find({}, { registeredUsers: 0 }).sort({
     "dateTime.dates.0": 1,
   });
+  console.log(events.length);
   if (events) jsonResult.event_list = events;
   return res.json(jsonResult);
 };
@@ -65,6 +66,22 @@ const addtoFavourites = async (req, res) => {
       message: "Successfully added to Favourites",
       state: true,
     });
+  } catch (error) {
+    return res.json({ message: error, state: false });
+  }
+};
+
+const getMyFavourites = async (req, res) => {
+  try {
+    const favs = req.user.favourites;
+    const events = await Event.find({ _id: { $in: favs } });
+    if (!events)
+      return res.json({
+        message: "You do not have any events on your favourites list.",
+        state: true,
+      });
+    console.log(events);
+    return res.json({ event_list: events, state: true });
   } catch (error) {
     return res.json({ message: error, state: false });
   }
