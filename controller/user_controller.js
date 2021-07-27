@@ -4,35 +4,24 @@ import Organization from "../models/organization.js";
 import Image from "../functions/image.js";
 
 const getCurrentUserData = async (req, res) => {
-	const events = await Event.find(
-		{ "dateTime.dates.0": { $gt: Date.now() } },
-		{ registeredUsers: 0 }
-	);
-	var organization;
-	if (req.user.organization) {
-		organization = await Organization.findById(req.user.organization, {
-			blockStatus: 0,
-		});
-		return res.json({
-			user: req.user,
-			organization: organization,
-			state: true,
-		});
-	}
-	if (events)
-		return res.json({
-			user: req.user,
-			organization: organization,
-			event_list: events,
-			state: true,
-		});
-	// console.log(
-	// 	`User: ${req.user}\n\nOrganization: ${organization}\n\nEvents:${events}`
-	// );
-	return res.json({
+	var jsonResult = {};
+	jsonResult = {
 		user: req.user,
 		state: true,
+	};
+
+	if (req.user.organization) {
+		var organization = await Organization.findById(req.user.organization, {
+			blockStatus: 0,
+		});
+		jsonResult.organization = organization;
+	}
+	const events = await Event.find({}, { registeredUsers: 0 }).sort({
+		"dateTime.dates.0": 1,
 	});
+	console.log(events.length);
+	if (events) jsonResult.event_list = events;
+	return res.json(jsonResult);
 };
 
 const getMyEvents = async (req, res) => {
@@ -45,7 +34,7 @@ const getMyEvents = async (req, res) => {
 				state: true,
 			});
 
-		return res.json({ events_list: events, state: true });
+		return res.json({ event_list: events, state: true });
 	} catch (error) {
 		return res.json({ message: error, state: false });
 	}
@@ -61,7 +50,22 @@ const getMyFavourites = async (req, res) => {
 				state: true,
 			});
 
-		return res.json({ events_list: events, state: true });
+		return res.json({ event_list: events, state: true });
+	} catch (error) {
+		return res.json({ message: error, state: false });
+	}
+};
+
+const addtoFavourites = async (req, res) => {
+	try {
+		const event = req.params.id;
+		const user = req.user;
+		await user.favourites.push(event);
+		user.save();
+		return res.json({
+			message: "Successfully added to Favourites",
+			state: true,
+		});
 	} catch (error) {
 		return res.json({ message: error, state: false });
 	}
@@ -86,5 +90,6 @@ export default {
 	getMyEvents,
 	getCurrentUserData,
 	getMyFavourites,
+	addtoFavourites,
 	uploadProfile,
 };

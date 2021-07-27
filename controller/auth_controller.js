@@ -4,6 +4,7 @@ import bcrypt, { hash } from "bcrypt";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 dotenv.config();
+const saltRounds = 10;
 
 //User SignUp
 const createUser = async (req, res) => {
@@ -20,7 +21,6 @@ const createUser = async (req, res) => {
 			});
 			//If the user is not registered. Create a new user
 		} else {
-			const saltRounds = 10;
 			const hashedPass = await bcrypt.hash(password, saltRounds);
 
 			const user = new User({
@@ -97,56 +97,38 @@ const loginUser = async (req, res) => {
 	}
 };
 
-const uploadProfile = async (req, res) => {
-	try {
-		var url = await Image.uploadImage(req.file.path, {
-			rootFolder: "users",
-			folder: req.user.name + "-" + req.user._id,
-			name: req.file.originalname,
-		});
-		res.json(url);
-	} catch (error) {
-		console.log(error);
-	}
-};
-
 const verifyToken = async (req, res) => {
 	try {
-		User.findOne({
-			tokenInfo: req.body.token,
-			tokenExpiration: { $gt: Date.now() },
-		},
-			async function (err, user) {
-				if (!user) {
-					return res.json({
-						message: " Sorry! User not found",
-						state: false,
-					});
-				}
-				user.hasVerifiedEmail = true;
-				user.tokenInfo = undefined;
-				// user.tokenExpiration = undefined;
-				await user.save(
-
-				);
-				return res.json({
-					message: "Email is verified.",
-					state: true,
-				})
-			}
+		var user = await User.findOne(
+			{
+				email: req.body.email,
+				"tokenInfo.token": req.body.token,
+				"tokenInfo.tokenExpiration": { $gt: Date.now() },
+			},
+			{ email: 1, tokenInfo: 1 }
 		);
 
-	}
-	catch (err) {
+		if (!user)
+			return res.json({
+				message: "User not found",
+				state: false,
+			});
+
+		user.hasVerifiedEmail = true;
+		user.tokenInfo = undefined;
+		await user.save();
+
 		return res.json({
-			message: "OOPS! Your Email is not verified",
+			message: "Email is verified.",
+			state: true,
+		});
+	} catch (err) {
+		return res.json({
+			message: err.message,
 			state: false,
 		});
 	}
-
 };
-
-
 
 const sendVerificationToken = async (req, res) => {
 	try {
@@ -195,13 +177,10 @@ const sendPasswordResetToken = async (req, res) => {
 		};
 
 		await user.save();
-		console.log(user.tokenInfo);
 		return res.json({
 			message: `A token has been sent to ${user.email}.`,
 			state: true,
 		});
-		res.json({ token: token });
-
 	} catch (err) {
 		console.log(err);
 		res.json(err);
@@ -212,20 +191,24 @@ const verifyPasswordResetToken = async (req, res) => {
 	try {
 		const { token } = req.body;
 		var user = await User.findOne(
-			{ 'tokenInfo.token': token, 'tokenInfo.tokenExpiration': { $gt: Date.now() } },
-			function (err, user) {
-				if (!user)
-					return res.json({ message: "Verification code has expired or is invalid.", state: false });
-				user.tokenInfo = undefined;
-				user.save();
-				res.json({ message: "Token has been verified", state: true });
-			}
+			{
+				email: req.body.email,
+				"tokenInfo.token": req.body.token,
+				"tokenInfo.tokenExpiration": { $gt: Date.now() },
+			},
+			{ tokenInfo: 1 }
 		);
-		console.log(token);
-
+		if (!user)
+			return res.json({
+				message: "Verification code has expired or is invalid.",
+				state: false,
+			});
+		user.tokenInfo = undefined;
+		await user.save();
+		return res.json({ message: "Your token has been verified", state: true });
 	} catch (err) {
 		console.log(err);
-		res.json(err);
+		res.json({ message: err, state: false });
 	}
 };
 
@@ -233,31 +216,45 @@ const passwordReset = async (req, res) => {
 	try {
 		const { email, password } = req.body;
 		var user = await User.findOne(
-			{ email: email, },
+			{ email: email },
+			{ email: 1, password: 1, _id: 1 }
 		);
-		console.log(email);
-		if (user == null) {
+		console.log(req.body);
+		if (!user) {
 			return res.json({
 				message: "Cannot find this account.",
 				state: false,
 			});
 		} else {
-			const saltRounds = 10;
 			const hashedPass = await bcrypt.hash(password, saltRounds);
-			user.password = hashedPass;
 			console.log(hashedPass);
-			// "$2b$10$1tEV4XtEhSwDGJyBED5alusDoXRtXCALXH0knpsolRb5WduOFtEqq"
-			user.save();
+			user.password = hashedPass;
+			await user.save();
 			return res.json({
-				message: "Changed password succesfully.",
+				message: "Successfully Changed password.",
 				state: true,
 			});
 		}
 	} catch (err) {
-		console.log(`User creation failed : ${err}`);
+		console.log(`Password Reset failed : ${err}`);
 		res.json({ message: err.message, state: false });
 	}
-}
+};
+
+const emailCheck = async (req, res) => {
+	try {
+		console.log(`query: ${req.query}`);
+		const user = await User.findOne({ email: req.query.email });
+		if (!user)
+			return res.json({
+				message: "No accounts with your email found.",
+				state: false,
+			});
+		return res.json({ state: true });
+	} catch (e) {
+		return res.json({ message: e.message, state: false });
+	}
+};
 
 // Do this from Flutter
 const logoutUser = (_, res) => {
@@ -280,6 +277,7 @@ export default {
 	createUser,
 	loginUser,
 	logoutUser,
+	emailCheck,
 	sendVerificationToken,
 	verifyToken,
 	sendPasswordResetToken,

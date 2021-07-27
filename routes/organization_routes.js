@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { checkUser } from "../middlewares/auth_middleware.js";
+import { authTokenCheck, checkUser } from "../middlewares/auth_middleware.js";
 import File from "../functions/image.js";
 
 import validation from "../middlewares/validation_middleware.js";
@@ -16,5 +16,11 @@ router.post(
 	// File.upload("documentFile"),
 	organization_controller.createOrganization
 ); //TODO: Add `checkUser` as middleware.
+
+router.get(
+	"/getevents/:id",
+	authTokenCheck,
+	organization_controller.getCreatedEvents
+);
 
 export default router;

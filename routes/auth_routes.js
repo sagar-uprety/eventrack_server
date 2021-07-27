@@ -24,12 +24,11 @@ router.post(
 	auth_controller.loginUser
 );
 
-
-
 router.get("/verify", auth_controller.sendVerificationToken);
 
 router.post("/verify", auth_controller.verifyToken);
 
+router.get("/checkEmail", auth_controller.emailCheck);
 router.get("/resetToken", auth_controller.sendPasswordResetToken);
 router.post("/resetToken", auth_controller.verifyPasswordResetToken);
 router.post("/resetPassword", auth_controller.passwordReset);

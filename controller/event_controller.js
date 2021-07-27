@@ -1,6 +1,6 @@
 import Event from "../models/events.js";
 import Organization from "../models/organization.js";
-
+import User from "../models/user.js";
 //Get all Events
 const viewAllEvent = async (req, res) => {
 	try {
@@ -89,7 +89,6 @@ const viewEventDetail = async (req, res) => {
 	}
 };
 
-
 //Search Events
 const searchEvents = async (req, res) => {
 	try {
@@ -134,6 +133,25 @@ const deleteEvent = async (req, res) => {
 	}
 };
 
+const getParticpants = async (req, res) => {
+	try {
+		const eventID = req.params.id;
+		const event = await Event.findById(eventID);
+		const participants = await User.find({
+			_id: { $in: event.registeredUsers },
+		});
+		if (!participants)
+			return res.json({
+				message: "No participants data found",
+				state: true,
+			});
+
+		return res.json({ user_list: participants, state: true });
+	} catch (error) {
+		return res.json({ message: error, state: false });
+	}
+};
+
 export default {
 	viewAllEvent,
 	createEvent,
@@ -141,4 +159,5 @@ export default {
 	viewEventDetail,
 	searchEvents,
 	deleteEvent,
+	getParticpants,
 };
