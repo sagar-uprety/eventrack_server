@@ -19,6 +19,7 @@ const getCurrentUserData = async (req, res) => {
 	const events = await Event.find({}, { registeredUsers: 0 }).sort({
 		"dateTime.dates.0": 1,
 	});
+	console.log(events.length);
 	if (events) jsonResult.event_list = events;
 	return res.json(jsonResult);
 };
@@ -33,7 +34,7 @@ const getMyEvents = async (req, res) => {
 				state: true,
 			});
 
-		return res.json({ events_list: events, state: true });
+		return res.json({ event_list: events, state: true });
 	} catch (error) {
 		return res.json({ message: error, state: false });
 	}
@@ -48,8 +49,8 @@ const getMyFavourites = async (req, res) => {
 				message: "You do not have any events on your favourites list.",
 				state: true,
 			});
-
-		return res.json({ events_list: events, state: true });
+			console.log(events)
+		return res.json({ event_list: events, state: true });
 	} catch (error) {
 		return res.json({ message: error, state: false });
 	}
