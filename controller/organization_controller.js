@@ -1,9 +1,7 @@
 import Organization from "../models/organization.js";
 import File from "../functions/image.js";
 
-const organizationActions = {};
-
-organizationActions.createOrganization = async (req, res) => {
+const createOrganization = async (req, res) => {
   try {
     const existing = await Organization.find({
       $or: [{ name: req.body.name }, { email: req.body.email }],
@@ -38,14 +36,14 @@ organizationActions.createOrganization = async (req, res) => {
   }
 };
 
-organizationActions.getCreatedEvents = async (req, res) => {
+const getCreatedEvents = async (req, res) => {
   try {
     const orgnizationID = req.params.id;
     const organization = await Organization.findById(orgnizationID);
     const createdEvents = await Event.find({ _id: { $in: organization.events } });
     if (!createdEvents)
       return res.json({
-        message: "No created Events data found",
+        message: " No created Events data found",
         state: true,
       });
 
@@ -55,4 +53,4 @@ organizationActions.getCreatedEvents = async (req, res) => {
   }
 };
 
-export default { organizationActions };
+export default { createOrganization, getCreatedEvents };
