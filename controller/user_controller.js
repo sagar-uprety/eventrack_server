@@ -82,7 +82,7 @@ const uploadProfile = async (req, res) => {
     });
     res.json({ message: "Profile Picture Updated.\nURL: " + url, state: true });
   } catch (error) {
-    console.log({ message: error, state: false });
+    res.json({ message: error, state: false });
   }
 };
 
