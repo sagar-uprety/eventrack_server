@@ -1,5 +1,6 @@
 import Event from "../models/events.js";
 import Organization from "../models/organization.js";
+import Image from "../functions/image.js";
 import User from "../models/user.js";
 //Get all Events
 const viewAllEvent = async (req, res) => {
@@ -30,7 +31,7 @@ const createEvent = async (req, res) => {
 				await event.save();
 				await organization.save();
 
-				return res.json({ message: "Event Saved.", state: true });
+				return res.json({ message: "Event Saved.", event: event, state: true });
 			}
 		}
 		return res.json({ message: "Organization not found.", state: false });
@@ -70,6 +71,33 @@ const register = async (req, res) => {
 		}
 	} catch (err) {
 		return res.json({ message: err, state: false });
+	}
+};
+
+const uploadProfile = async (req, res) => {
+	try {
+		var event = Event.findById(req.params.id);
+
+		var url = await Image.uploadImage(req.file.path, {
+			rootFolder: "events",
+			folder: req.event.title + "-" + req.user._id,
+			name: req.file.originalname,
+		});
+		event.eventProfile = url;
+		await event.save();
+
+		var events = Event.find({}, { registeredUsers: 0 }).sort({
+			"dateTime.dates.0": 1,
+		});
+
+		res.json({
+			message: "Event Profile Updated.",
+			event_list: events,
+			event: event,
+			state: true,
+		});
+	} catch (error) {
+		console.log({ message: error, state: false });
 	}
 };
 
@@ -153,6 +181,7 @@ export default {
 	viewAllEvent,
 	createEvent,
 	register,
+	uploadProfile,
 	viewEventDetail,
 	searchEvents,
 	deleteEvent,

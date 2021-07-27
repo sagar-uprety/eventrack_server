@@ -84,14 +84,16 @@ const addtoFavourites = async (req, res) => {
 
 const uploadProfile = async (req, res) => {
 	try {
-		//TODO:Save `url` to req.user
+		var user = req.user;
 		var url = await Image.uploadImage(req.file.path, {
 			rootFolder: "users",
 			// folder: "temp",
 			folder: req.user.name + "-" + req.user._id,
 			name: req.file.originalname,
 		});
-		res.json({ message: "Profile Picture Updated.\nURL: " + url, state: true });
+		user.profileImage = url;
+		await user.save();
+		res.json({ message: "Profile Picture Updated.", user: user, state: true });
 	} catch (error) {
 		console.log({ message: error, state: false });
 	}
