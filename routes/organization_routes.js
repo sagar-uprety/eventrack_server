@@ -17,6 +17,6 @@ router.post(
   organization_controller.createOrganization
 ); //TODO: Add `checkUser` as middleware.
 
-router.get("/getevents", authTokenCheck, organization_controller.getCreatedEvents);
+router.get("/getevents/:id", authTokenCheck, organization_controller.getCreatedEvents);
 
 export default router;

@@ -34,7 +34,7 @@ const getMyEvents = async (req, res) => {
 				state: true,
 			});
 
-		return res.json({ events_list: events, state: true });
+		return res.json({ event_list: events, state: true });
 	} catch (error) {
 		return res.json({ message: error, state: false });
 	}
@@ -50,7 +50,7 @@ const getMyFavourites = async (req, res) => {
 				state: true,
 			});
 
-		return res.json({ events_list: events, state: true });
+		return res.json({ event_list: events, state: true });
 	} catch (error) {
 		return res.json({ message: error, state: false });
 	}
