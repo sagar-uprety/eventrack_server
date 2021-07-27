@@ -39,8 +39,11 @@ const createOrganization = async (req, res) => {
 const getCreatedEvents = async (req, res) => {
   try {
     const orgnizationID = req.params.id;
+    console.log('Hi');
+    console.log(organizationID);
     const organization = await Organization.findById(orgnizationID);
     const createdEvents = await Event.find({ _id: { $in: organization.events } });
+    console.log(createdEvents);
     if (!createdEvents)
       return res.json({
         message: " No created Events data found",
