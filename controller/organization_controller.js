@@ -1,4 +1,5 @@
 import Organization from "../models/organization.js";
+import Event from "../models/events.js";
 import File from "../functions/image.js";
 
 const createOrganization = async (req, res) => {
@@ -38,10 +39,7 @@ const createOrganization = async (req, res) => {
 
 const getCreatedEvents = async (req, res) => {
   try {
-    const orgnizationID = req.params.id;
-    console.log('Hi');
-    console.log(organizationID);
-    const organization = await Organization.findById(orgnizationID);
+    const organization = await Organization.findById(req.params.id);
     const createdEvents = await Event.find({ _id: { $in: organization.events } });
     console.log(createdEvents);
     if (!createdEvents)
@@ -52,7 +50,8 @@ const getCreatedEvents = async (req, res) => {
 
     return res.json({ event_list: createdEvents, state: true });
   } catch (error) {
-    return res.json({ message: error, state: false });
+    console.log(error);
+    return res.json({ message: error.message, state: false });
   }
 };
 
