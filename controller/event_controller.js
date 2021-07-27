@@ -93,18 +93,15 @@ const viewEventDetail = async (req, res) => {
 const searchEvents = async (req, res) => {
 	try {
 		const { text, category, date } = req.query;
-
-		const events = await Event.find(
-			{
-				title: new RegExp(text, "i"),
-				categories: category ? { $in: category } : { $exists: true },
-				"dateTime.dates.0": date
-					? { $gte: date[0], $lte: date[1] }
-					: { $exists: true },
-			},
-			{ title: 1, categories: 1, dateTime: 1 }
-		);
-
+		console.log(req.query);
+		const events = await Event.find({
+			categories: category ? { $in: category } : { $exists: true },
+			"dateTime.dates.0": date
+				? { $gte: date[0], $lte: date[1] }
+				: { $exists: true },
+			title: new RegExp(text, "i"),
+		});
+		console.log(events.length);
 		if (!events) return res.json({ message: "No events found.", state: false });
 		return res.json({ event_list: events, state: true });
 	} catch (err) {

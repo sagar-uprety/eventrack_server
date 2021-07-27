@@ -8,8 +8,13 @@ const router = Router();
 router.get("/", checkUser, user_controller.getCurrentUserData);
 router.get("/myEvents", checkUser, user_controller.getMyEvents);
 router.get("/myfavourites", checkUser, user_controller.getMyFavourites);
-router.post("/myfavourites", checkUser, user_controller.addtoFavourites);
+router.post("/myfavourites/:id", checkUser, user_controller.addtoFavourites);
 
-router.post("/uploadProfile", checkUser, image.upload("image"), user_controller.uploadProfile);
+router.post(
+	"/uploadProfile",
+	checkUser,
+	image.upload("image"),
+	user_controller.uploadProfile
+);
 
 export default router;
