@@ -71,22 +71,6 @@ const addtoFavourites = async (req, res) => {
   }
 };
 
-const getMyFavourites = async (req, res) => {
-  try {
-    const favs = req.user.favourites;
-    const events = await Event.find({ _id: { $in: favs } });
-    if (!events)
-      return res.json({
-        message: "You do not have any events on your favourites list.",
-        state: true,
-      });
-    console.log(events);
-    return res.json({ event_list: events, state: true });
-  } catch (error) {
-    return res.json({ message: error, state: false });
-  }
-};
-
 const uploadProfile = async (req, res) => {
   try {
     //TODO:Save `url` to req.user
