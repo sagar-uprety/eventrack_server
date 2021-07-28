@@ -67,10 +67,12 @@ const register = async (req, res) => {
 			}
 			await event.save();
 			await currentUser.save();
-			return res.json({ message: message, user: currentUser, state: true });
+			var jsonResult = { message: message, user: currentUser, state: true };
+			return res.json(jsonResult);
 		}
 	} catch (err) {
-		return res.json({ message: err, state: false });
+		console.log(err);
+		return res.json({ message: err.message, state: false });
 	}
 };
 

@@ -69,9 +69,7 @@ const addtoFavourites = async (req, res) => {
 			console.log(`length: ${user.favorites.length}`);
 			message = "Removed from favourites";
 		}
-		print("hello");
 		await user.save();
-		console.log(message);
 		return res.json({
 			message: message,
 			state: true,
@@ -92,9 +90,32 @@ const uploadProfile = async (req, res) => {
 		});
 		user.profileImage = url;
 		await user.save();
-		res.json({ message: "Profile Picture Updated.", user: user, state: true });
+		return res.json({
+			message: "Profile Picture Updated.",
+			user: user,
+			state: true,
+		});
 	} catch (error) {
-		console.log({ message: error, state: false });
+		return res.json({ message: error.message, state: false });
+	}
+};
+
+const editUserProfile = async (req, res) => {
+	try {
+		const { name, phone, address, gender } = req.body;
+		var user = req.user;
+		user.name = name;
+		user.phone = phone;
+		user.address = address;
+		user.gender = gender;
+		await user.save();
+		return res.json({
+			message: "Successfully Updated your Profile.",
+			user: user,
+			state: true,
+		});
+	} catch (error) {
+		return res.json({ message: error.message, state: false });
 	}
 };
 
@@ -102,6 +123,7 @@ export default {
 	getMyEvents,
 	getCurrentUserData,
 	getMyFavourites,
+	editUserProfile,
 	addtoFavourites,
 	uploadProfile,
 };
