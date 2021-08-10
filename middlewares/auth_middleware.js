@@ -40,9 +40,8 @@ const checkUser = async (req, res, next) => {
 		if (user) {
 			req.user = user; //returns acutal User Model - Mongo
 			next();
-		}
-	}
-	res.status(400).json({ message: "Invalid Token", state: false });
+		} else res.status(400).json({ message: "Invalid Token", state: false });
+	} else res.status(400).json({ message: "Invalid Token", state: false });
 };
 
 /**

@@ -11,7 +11,9 @@ const getCurrentUserData = async (req, res) => {
 	};
 
 	if (req.user.organization) {
-		var organization = await Organization.findById(req.user.organization);
+		var organization = await Organization.findById(req.user.organization, {
+			blockStatus: 0,
+		});
 		if (organization) jsonResult.organization = organization;
 	}
 	const events = await Event.find({}).sort({
