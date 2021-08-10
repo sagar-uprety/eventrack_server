@@ -37,11 +37,12 @@ const checkUser = async (req, res, next) => {
 		let user = await User.findById(token._id);
 		// user.blockStatus = checkBlockState(user.blockStatus);
 		// await user.save();
-		req.user = user; //returns acutal User Model - Mongo
-		next();
-	} else {
-		res.status(400).json({ message: "Invalid Token", state: false });
+		if (user) {
+			req.user = user; //returns acutal User Model - Mongo
+			next();
+		}
 	}
+	res.status(400).json({ message: "Invalid Token", state: false });
 };
 
 /**

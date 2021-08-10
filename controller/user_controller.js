@@ -11,9 +11,7 @@ const getCurrentUserData = async (req, res) => {
 	};
 
 	if (req.user.organization) {
-		var organization = await Organization.findById(req.user.organization, {
-			blockStatus: 0,
-		});
+		var organization = await Organization.findById(req.user.organization);
 		if (organization) jsonResult.organization = organization;
 	}
 	const events = await Event.find({}).sort({
@@ -84,7 +82,6 @@ const uploadProfile = async (req, res) => {
 		var user = req.user;
 		var url = await Image.uploadImage(req.file.path, {
 			rootFolder: "users",
-			// folder: "temp",
 			folder: req.user.name + "-" + req.user._id,
 			name: req.file.originalname,
 		});

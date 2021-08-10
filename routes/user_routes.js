@@ -17,6 +17,6 @@ router.post(
 	user_controller.uploadProfile
 );
 
-router.post("/editUserprofile", checkUser, user_controller.editUserProfile);
+router.post("/edit", checkUser, user_controller.editUserProfile);
 
 export default router;

@@ -5,6 +5,7 @@ var eventSchema = new mongoose.Schema(
 		title: {
 			type: String,
 			required: true,
+			unique: true,
 		},
 		description: {
 			type: String,
@@ -25,6 +26,9 @@ var eventSchema = new mongoose.Schema(
 			latitude: Number,
 			longitude: Number,
 			location: String,
+		},
+		maxParticipants: {
+			type: Number,
 		},
 		author: {
 			type: mongoose.Schema.Types.ObjectId,
